@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokmat Editorial Employee Directory</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container-fluid { max-width: 1400px; margin: 0 auto; }
+
+        /* LOGIN OVERLAY */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loginOverlay .login-box {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .logo img {
+            width: 100%;
+            height: auto;
+            max-height: 80px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 8px;
+        }
+        #loginOverlay .login-box h3 {
+            text-align: center;
+            color: #1a3a6b;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        #loginOverlay .login-box p.sub {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .form-group {
+            margin-bottom: 18px;
+        }
+        #loginOverlay .login-box .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+        #loginOverlay .login-box .form-group input {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            font-size: 14px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .form-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        #loginOverlay .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #loginOverlay .login-box .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42,82,152,0.3);
+        }
+        #loginOverlay .login-box .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #loginOverlay .login-box .login-error {
+            color: #dc3545;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        #loginOverlay .login-box .login-error.show { display: block; }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .header-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            min-height: 48px;
+        }
+        .header-row2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .header-logo {
+            height: 42px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-counts {
+            display: flex;
+            align-items: center;
+            gap: 8px 14px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: center;
+        }
+        .header-counts .count-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.1);
+            padding: 3px 12px 3px 10px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-counts .count-chip .count-label {
+            opacity: 0.7;
+            font-weight: 400;
+            font-size: 11px;
+        }
+        .header-counts .count-chip .count-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .header-counts .count-chip.total .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.active .count-value { color: #81c784; }
+        .header-counts .count-chip.lm .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.ls .count-value { color: #ffb74d; }
+        .header-counts .count-chip.lt .count-value { color: #ce93d8; }
+        .header-counts .count-divider {
+            color: rgba(255,255,255,0.15);
+            font-size: 14px;
+            font-weight: 100;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px 4px 16px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+        .header-user .user-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .header-user .user-role {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        .header-user .logout-header-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header-user .logout-header-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            padding: 5px 16px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+        }
+        .header-stats .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 600;
+            margin-right: 4px;
+            letter-spacing: 0.3px;
+        }
+        .header-stats .rank-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 12px 2px 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-stats .rank-item .rank-name {
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .header-stats .rank-item .rank-count {
+            font-weight: 700;
+            background: rgba(255,255,255,0.15);
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        /* FILTERS */
+        .filters-section {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .filter-group label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #444;
+            margin: 0;
+        }
+        .filter-group select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 12px;
+            min-width: 120px;
+        }
+        .filter-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        .search-box {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 12px;
+            min-width: 160px;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+
+        /* ACTIVE USERS */
+        .active-users-section {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            border-left: 4px solid #28a745;
+        }
+        .active-users-section .au-title {
+            font-weight: 600;
+            color: #1a3a6b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .active-users-section .au-title i { color: #28a745; margin-right: 6px; }
+        .active-users-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+        .active-user-tag {
+            background: #e8f0fe;
+            color: #1a3a6b;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #d4e0f0;
+        }
+        .active-user-tag .user-unit {
+            color: #888;
+            font-weight: 400;
+            font-size: 10px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .stats-bar .stat-item { font-size: 12px; color: #555; }
+        .stats-bar .stat-item strong { color: #1a3a6b; font-size: 14px; }
+        .stats-bar .stat-divider { color: #ddd; }
+
+        /* EMPLOYEE GRID */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        /* EMPLOYEE CARD */
+        .employee-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            overflow: hidden;
+            transition: all 0.25s ease;
+            border: 1px solid #e8ecf1;
+            display: flex;
+            flex-direction: column;
+        }
+        .employee-card:hover {
+            box-shadow: 0 6px 25px rgba(0,0,0,0.10);
+            transform: translateY(-3px);
+        }
+        .card-header {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card-header .name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a3a6b;
+        }
+        .card-header .badge-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .card-header .role-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .role-badge.admin { background: #dc3545; color: white; }
+        .role-badge.icd-head { background: #ff9800; color: white; }
+        .role-badge.employee { background: #2a5298; color: white; }
+        .role-badge.unknown { background: #6c757d; color: white; }
+        .rank-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #e8ecf1;
+            color: #333;
+        }
+        .rank-badge.A { background: #28a745; color: white; }
+        .rank-badge.B { background: #2a5298; color: white; }
+        .rank-badge.C { background: #ff9800; color: white; }
+        .rank-badge.D { background: #dc3545; color: white; }
+
+        .card-body { padding: 12px 16px 14px; flex: 1; }
+        .detail-row-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 6px;
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 3px;
+            align-items: baseline;
+        }
+        .detail-row-inline .label {
+            color: #888;
+            font-weight: 500;
+        }
+        .detail-row-inline .value {
+            color: #222;
+            word-break: break-word;
+        }
+        .detail-row-inline .divider {
+            color: #ccc;
+            margin: 0 3px;
+        }
+
+        .job-profile-section {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #f0f2f5;
+        }
+        .job-profile-section .jp-label {
+            font-weight: 600;
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        .job-profile-section .jp-value {
+            font-size: 12px;
+            color: #222;
+            background: #f5f7fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .card-footer {
+            padding: 8px 16px 12px;
+            border-top: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #fafbfc;
+            border-radius: 0 0 12px 12px;
+        }
+        .card-footer .age-badge {
+            font-size: 11px;
+            color: #555;
+            background: #e8ecf1;
+            padding: 2px 12px;
+            border-radius: 12px;
+        }
+        .card-footer .active-status {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .card-footer .active-status.active { color: #28a745; }
+        .card-footer .active-status.inactive { color: #999; }
+        .card-footer .workplace-tag {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            background: white;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+        .no-results i { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 12px; }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        .loading-spinner i { font-size: 28px; margin-bottom: 10px; display: block; color: #2a5298; }
+
+        @media (max-width: 768px) {
+            .header-row1 { flex-direction: column; align-items: center; }
+            .header-counts { justify-content: center; }
+            .filters-section { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: center; }
+            .employee-grid { grid-template-columns: 1fr; }
+            .stats-bar { justify-content: center; }
+            #loginOverlay .login-box { padding: 30px 25px; margin: 15px; }
+        }
+        @media (max-width: 480px) {
+            .card-header { flex-direction: column; align-items: stretch; }
+            .card-footer { flex-direction: column; align-items: stretch; text-align: center; }
+            .header-counts .count-chip {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+            .header-counts .count-chip .count-value {
+                font-size: 12px;
+            }
+            .header-counts .count-chip .count-label {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <div class="logo">
+            <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" alt="LOKMAT">
+            <h3>Editorial Employee Directory</h3>
+            <p class="sub">Lokmat Editorial · Data & Users</p>
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>Password (Last 4 digits of Mobile)</label>
+            <input type="password" id="loginPassword" placeholder="Enter last 4 digits" maxlength="4" autocomplete="current-password">
+        </div>
+        <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+            <i class="fa fa-sign-in"></i> Sign In
+        </button>
+        <div class="login-error" id="loginError">Invalid email or password. Please try again.</div>
+    </div>
+</div>
+
+<div class="container-fluid" id="mainContent" style="display:none;">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-row1">
+            <div class="header-left">
+                <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" 
+                     alt="LOKMAT" class="header-logo" 
+                     onerror="this.style.display='none'">
+            </div>
+            
+            <div class="header-counts" id="headerCounts">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <div class="header-user">
+                <div>
+                    <div class="user-name" id="headerUserName">User</div>
+                    <div class="user-role" id="headerUserRole">Role</div>
+                </div>
+                <button class="logout-header-btn" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</button>
+            </div>
+        </div>
+        
+        <div class="header-row2" id="headerRow2"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-section">
+        <div class="filter-group">
+            <label><i class="fa fa-building"></i> Unit</label>
+            <select id="unitFilter" onchange="applyFilters()">
+                <option value="">All Units</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-map-marker"></i> Workplace</label>
+            <select id="workplaceFilter" onchange="applyFilters()">
+                <option value="">All Workplaces</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-tag"></i> Rank</label>
+            <select id="rankFilter" onchange="applyFilters()">
+                <option value="">All Ranks</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-briefcase"></i> Job Profile</label>
+            <select id="jobProfileFilter" onchange="applyFilters()">
+                <option value="">All Profiles</option>
+            </select>
+        </div>
+        <div class="filter-group" style="flex:1; justify-content:flex-end;">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search by name..." oninput="applyFilters()">
+        </div>
+    </div>
+
+    <!-- ACTIVE USERS -->
+    <div class="active-users-section" id="activeUsersSection">
+        <div class="au-title"><i class="fa fa-user-circle"></i> Currently Active Users</div>
+        <div class="active-users-list" id="activeUsersList">
+            <span style="color:#999; font-size:12px;">Loading active users...</span>
+        </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar" id="statsBar">
+        <span class="stat-item">👥 <strong id="displayCount">0</strong> employees</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">🏢 <strong id="displayUnits">0</strong> units</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📍 <strong id="displayWorkplaces">0</strong> workplaces</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📋 <strong id="displayPublications">0</strong> publications</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">⭐ <strong id="displayAvgAge">0</strong> avg age</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📊 <strong id="displayJobProfiles">0</strong> job profiles</span>
+    </div>
+
+    <!-- EMPLOYEE GRID -->
+    <div class="employee-grid" id="employeeGrid">
+        <div class="loading-spinner">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading employee data...
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwBKY_4AYKq8rdNSkfp85zqJouyf8QkDFXM19OxMvRB6kEV5CIRRDoP6gTrxGZ1k4Fw/exec';
+
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+let allEmployees = [];
+let filteredEmployees = [];
+let allUsers = [];
+let activeUsers = [];
+let loggedInUser = null;
+
+// ============================================================
+// LOGIN SYSTEM
+// ============================================================
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    errorEl.classList.remove('show');
+    
+    if (!email || !password) {
+        errorEl.textContent = 'Please enter both email and password.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    if (!/^\d{4}$/.test(password)) {
+        errorEl.textContent = 'Password must be exactly 4 digits.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Authenticating...';
+    
+    try {
+        const result = await callAPI('authenticateUser', { email: email, password: password });
+        if (result.success && result.user) {
+            if (result.user.role === 'Employee') {
+                errorEl.textContent = 'Access denied. Only Admin and ICD Head can login.';
+                errorEl.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+                return;
+            }
+            
+            loggedInUser = result.user;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('headerUserName').textContent = result.user.name || result.user.email;
+            
+            if (result.user.role === 'ICD Head') {
+                const unitsDisplay = result.user.units && result.user.units.length > 0 
+                    ? ' - ' + result.user.units.join(', ') 
+                    : '';
+                document.getElementById('headerUserRole').textContent = 'ICD Head' + unitsDisplay;
+            } else {
+                document.getElementById('headerUserRole').textContent = result.user.role;
+            }
+            
+            await loadAllData();
+        } else {
+            errorEl.textContent = result.message || 'Invalid email or password. Please try again.';
+            errorEl.classList.add('show');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        }
+    } catch(err) {
+        errorEl.textContent = 'Error connecting to server. Please try again.';
+        errorEl.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        console.error('Login error:', err);
+    }
+}
+
+function logout() {
+    if (loggedInUser && loggedInUser.email) {
+        callAPI('logoutUser', { email: loggedInUser.email }).catch(() => {});
+    }
+    loggedInUser = null;
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginBtn').innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('loginEmail').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+    });
+});
+
+// ============================================================
+// API CALL
+// ============================================================
+function callAPI(action, params) {
+    return new Promise((resolve, reject) => {
+        let url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+        if (params) {
+            url += '&params=' + encodeURIComponent(JSON.stringify(params));
+        }
+        
+        const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            resolve(data);
+        };
+        
+        const script = document.createElement('script');
+        script.src = url + '&callback=' + callbackName;
+        script.onerror = function() {
+            delete window[callbackName];
+            fetch(url)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(err => reject(err));
+        };
+        document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                reject(new Error('Request timeout'));
+            }
+        }, 15000);
+    });
+}
+
+// ============================================================
+// LOAD DATA - UPDATED FOR "Data" SHEET
+// ============================================================
+async function loadAllData() {
+    try {
+        // Load employees from Data sheet
+        const empResult = await callAPI('getEmployees', { 
+            email: loggedInUser.email,
+            role: loggedInUser.role,
+            units: loggedInUser.units || []
+        });
+        
+        if (empResult.success) {
+            allEmployees = empResult.employees || [];
+            filteredEmployees = [...allEmployees];
+        } else {
+            console.error('Failed to load employees:', empResult.error);
+            showError('Failed to load employee data: ' + (empResult.error || 'Unknown error'));
+            return;
+        }
+        
+        // Load users from Users sheet
+        const usersResult = await callAPI('getUsers');
+        if (usersResult.success) {
+            allUsers = usersResult.users || [];
+            activeUsers = allUsers.filter(u => u.Status && u.Status.toLowerCase() === 'active');
+            updateActiveUsers();
+        } else {
+            console.error('Failed to load users:', usersResult.error);
+        }
+        
+        // Populate filters
+        populateFilters();
+        
+        updateHeaderStats();
+        applyFilters();
+        
+    } catch(error) {
+        console.error('Error loading data:', error);
+        showError('Error loading data: ' + error.message);
+    }
+}
+
+// ============================================================
+// POPULATE FILTERS
+// ============================================================
+function populateFilters() {
+    // Units
+    const units = [...new Set(allEmployees.map(emp => emp.Unit).filter(u => u))];
+    const unitSelect = document.getElementById('unitFilter');
+    unitSelect.innerHTML = '<option value="">All Units</option>';
+    units.sort().forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        unitSelect.appendChild(option);
+    });
+    
+    // Job Profiles
+    const profiles = [...new Set(allEmployees.map(emp => emp.JobProfile).filter(p => p))];
+    const profileSelect = document.getElementById('jobProfileFilter');
+    profileSelect.innerHTML = '<option value="">All Profiles</option>';
+    profiles.sort().forEach(profile => {
+        const option = document.createElement('option');
+        option.value = profile;
+        option.textContent = profile;
+        profileSelect.appendChild(option);
+    });
+}
+
+// ============================================================
+// UPDATE ACTIVE USERS
+// ============================================================
+function updateActiveUsers() {
+    const container = document.getElementById('activeUsersList');
+    
+    if (!activeUsers || activeUsers.length === 0) {
+        container.innerHTML = '<span style="color:#999; font-size:12px;">No active users currently</span>';
+        return;
+    }
+    
+    let html = '';
+    activeUsers.forEach(user => {
+        const unitDisplay = user.Unit ? ' (' + user.Unit + ')' : '';
+        const roleDisplay = user.Role ? ' - ' + user.Role : '';
+        html += `<span class="active-user-tag">
+            <i class="fa fa-circle" style="color:#28a745; font-size:8px;"></i>
+            ${escapeHtml(user.Name || user.Email)}
+            <span class="user-unit">${escapeHtml(unitDisplay)}</span>
+            ${escapeHtml(roleDisplay)}
+        </span>`;
+    });
+    container.innerHTML = html;
+}
+
+// ============================================================
+// UPDATE HEADER STATS
+// ============================================================
+function updateHeaderStats() {
+    const countsContainer = document.getElementById('headerCounts');
+    const rankContainer = document.getElementById('headerRow2');
+    
+    if (!loggedInUser) { 
+        countsContainer.innerHTML = ''; 
+        rankContainer.innerHTML = ''; 
+        return; 
+    }
+    
+    let total = allEmployees.length;
+    let activeCount = activeUsers.length;
+    
+    // Count by publication
+    let lmCount = 0, lsCount = 0, ltCount = 0;
+    allEmployees.forEach(emp => {
+        const pub = emp.Publication || '';
+        if (pub.includes('LM-')) lmCount++;
+        else if (pub.includes('LS-')) lsCount++;
+        else if (pub.includes('LT-')) ltCount++;
+    });
+    
+    countsContainer.innerHTML = `
+        <span class="count-chip total">
+            <span class="count-label">Total</span>
+            <span class="count-value">${total}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lm">
+            <span class="count-label">LM</span>
+            <span class="count-value">${lmCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip ls">
+            <span class="count-label">LS</span>
+            <span class="count-value">${lsCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lt">
+            <span class="count-label">LT</span>
+            <span class="count-value">${ltCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip active">
+            <span class="count-label">Active</span>
+            <span class="count-value">${activeCount}</span>
+        </span>
+    `;
+    
+    // Rank distribution
+    const rankCounts = { A: 0, B: 0, C: 0, D: 0 };
+    allEmployees.forEach(emp => {
+        if (emp.Rank && rankCounts.hasOwnProperty(emp.Rank)) {
+            rankCounts[emp.Rank]++;
+        }
+    });
+    
+    let rankHtml = '';
+    const rankOrder = ['A', 'B', 'C', 'D'];
+    rankOrder.forEach(rank => {
+        const count = rankCounts[rank] || 0;
+        if (count > 0) {
+            rankHtml += `<span class="rank-item"><span class="rank-name">Rank ${rank}</span><span class="rank-count">${count}</span></span>`;
+        }
+    });
+    
+    if (rankHtml) {
+        rankContainer.innerHTML = `
+            <div class="header-stats">
+                <span class="stat-label">Rank Distribution:</span>
+                ${rankHtml}
+            </div>
+        `;
+    } else {
+        rankContainer.innerHTML = '';
+    }
+}
+
+// ============================================================
+// APPLY FILTERS
+// ============================================================
+function applyFilters() {
+    const unit = document.getElementById('unitFilter').value;
+    const workplace = document.getElementById('workplaceFilter').value;
+    const rank = document.getElementById('rankFilter').value;
+    const jobProfile = document.getElementById('jobProfileFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    
+    filteredEmployees = allEmployees.filter(emp => {
+        if (!emp.Name) return false;
+        if (unit && emp.Unit !== unit) return false;
+        if (workplace && emp.WorkPlace !== workplace) return false;
+        if (rank && emp.Rank !== rank) return false;
+        if (jobProfile && emp.JobProfile !== jobProfile) return false;
+        if (searchTerm && !emp.Name.toLowerCase().includes(searchTerm)) return false;
+        return true;
+    });
+    
+    renderEmployees(filteredEmployees);
+    updateDisplayStats();
+    updateWorkplaceDropdown(unit);
+}
+
+// ============================================================
+// UPDATE WORKPLACE DROPDOWN
+// ============================================================
+function updateWorkplaceDropdown(unit) {
+    const select = document.getElementById('workplaceFilter');
+    const currentValue = select.value;
+    
+    let workplaces = [];
+    if (!unit) {
+        workplaces = [...new Set(allEmployees.map(emp => emp.WorkPlace).filter(wp => wp))];
+    } else {
+        workplaces = [...new Set(allEmployees.filter(emp => emp.Unit === unit).map(emp => emp.WorkPlace).filter(wp => wp))];
+    }
+    
+    workplaces.sort();
+    select.innerHTML = '<option value="">All Workplaces</option>';
+    workplaces.forEach(wp => {
+        const option = document.createElement('option');
+        option.value = wp;
+        option.textContent = wp;
+        select.appendChild(option);
+    });
+    
+    if (currentValue && workplaces.includes(currentValue)) {
+        select.value = currentValue;
+    }
+}
+
+// ============================================================
+// UPDATE DISPLAY STATS
+// ============================================================
+function updateDisplayStats() {
+    const units = new Set();
+    const workplaces = new Set();
+    const publications = new Set();
+    const jobProfiles = new Set();
+    let totalAge = 0;
+    let ageCount = 0;
+    
+    filteredEmployees.forEach(emp => {
+        if (emp.Unit) units.add(emp.Unit);
+        if (emp.WorkPlace) workplaces.add(emp.WorkPlace);
+        if (emp.Publication) publications.add(emp.Publication);
+        if (emp.JobProfile) jobProfiles.add(emp.JobProfile);
+        if (emp.Age) {
+            totalAge += parseInt(emp.Age) || 0;
+            ageCount++;
+        }
+    });
+    
+    document.getElementById('displayCount').textContent = filteredEmployees.length;
+    document.getElementById('displayUnits').textContent = units.size;
+    document.getElementById('displayWorkplaces').textContent = workplaces.size;
+    document.getElementById('displayPublications').textContent = publications.size;
+    document.getElementById('displayJobProfiles').textContent = jobProfiles.size;
+    document.getElementById('displayAvgAge').textContent = ageCount > 0 ? Math.round(totalAge / ageCount) : 0;
+}
+
+// ============================================================
+// RENDER EMPLOYEES
+// ============================================================
+function renderEmployees(employees) {
+    const grid = document.getElementById('employeeGrid');
+    
+    if (employees.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fa fa-search"></i>
+                No employees found matching the current filters
+                <br><small style="color:#aaa;">Try adjusting your filters or search terms</small>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    employees.forEach(emp => {
+        html += buildEmployeeCard(emp);
+    });
+    grid.innerHTML = html;
+}
+
+// ============================================================
+// BUILD EMPLOYEE CARD - UPDATED FOR Data SHEET COLUMNS
+// ============================================================
+function buildEmployeeCard(emp) {
+    let roleClass = 'unknown';
+    let roleText = emp.Role || 'Employee';
+    if (roleText === 'Admin') { roleClass = 'admin'; }
+    else if (roleText === 'ICD Head') { roleClass = 'icd-head'; }
+    else if (roleText === 'Employee') { roleClass = 'employee'; }
+    
+    let rankClass = '';
+    let rankText = emp.Rank || '';
+    if (rankText === 'A') rankClass = 'A';
+    else if (rankText === 'B') rankClass = 'B';
+    else if (rankText === 'C') rankClass = 'C';
+    else if (rankText === 'D') rankClass = 'D';
+    
+    // Check if user is active
+    const isActive = activeUsers.some(u => u.Email && u.Email.toLowerCase() === (emp.Email || '').toLowerCase());
+    const activeStatusHtml = isActive ? 
+        '<span class="active-status active"><i class="fa fa-circle"></i> Active</span>' : 
+        '<span class="active-status inactive"><i class="fa fa-circle-o"></i> Inactive</span>';
+    
+    let detailHtml = `
+        <div class="detail-row-inline">
+            <span class="label">Designation</span>
+            <span class="value">${escapeHtml(emp.Designation || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Emp Code</span>
+            <span class="value">${escapeHtml(emp.EmpCode || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">Publication</span>
+            <span class="value">${escapeHtml(emp.Publication || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">DOB</span>
+            <span class="value">${escapeHtml(emp.DOB || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">Age</span>
+            <span class="value">${escapeHtml(emp.Age || '—')} years</span>
+        </div>
+    `;
+    
+    let jobProfileHtml = '';
+    if (emp.JobProfile) {
+        jobProfileHtml = `
+            <div class="job-profile-section">
+                <div class="jp-label"><i class="fa fa-briefcase"></i> Job Profile</div>
+                <span class="jp-value">${escapeHtml(emp.JobProfile)}</span>
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="employee-card">
+            <div class="card-header">
+                <span class="name">${escapeHtml(emp.Name)}</span>
+                <div class="badge-group">
+                    ${rankText ? `<span class="rank-badge ${rankClass}">Rank ${escapeHtml(rankText)}</span>` : ''}
+                    <span class="role-badge ${roleClass}">${roleText}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                ${detailHtml}
+                ${jobProfileHtml}
+            </div>
+            <div class="card-footer">
+                <span class="workplace-tag">📍 ${escapeHtml(emp.WorkPlace || '—')}</span>
+                ${activeStatusHtml}
+            </div>
+        </div>
+    `;
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function showToast(message, type) {
+    const existing = document.querySelector('.custom-toast');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        max-width: 400px;
+    `;
+    
+    if (type === 'success') {
+        toast.style.background = '#28a745';
+    } else if (type === 'error') {
+        toast.style.background = '#dc3545';
+    } else {
+        toast.style.background = '#17a2b8';
+    }
+    
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    const grid = document.getElementById('employeeGrid');
+    grid.innerHTML = `
+        <div class="no-results" style="border-left: 4px solid #dc3545;">
+            <i class="fa fa-exclamation-triangle" style="color:#dc3545;"></i>
+            ${escapeHtml(message)}
+            <br><small style="color:#aaa;">Please check your API URL and try again</small>
+        </div>
+    `;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('unitFilter').addEventListener('change', function() {
+        applyFilters();
+    });
+    document.getElementById('rankFilter').addEventListener('change', function() {
+        applyFilters();
+    });
+    document.getElementById('jobProfileFilter').addEventListener('change', function() {
+        applyFilters();
+    });
+});
+</script>
+
+</body>
+</html>
