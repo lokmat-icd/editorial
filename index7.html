@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokmat Editorial Employee Directory</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container-fluid { max-width: 1400px; margin: 0 auto; }
+
+        /* LOGIN OVERLAY */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loginOverlay .login-box {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .logo img {
+            width: 100%;
+            height: auto;
+            max-height: 80px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 8px;
+        }
+        #loginOverlay .login-box h3 {
+            text-align: center;
+            color: #1a3a6b;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        #loginOverlay .login-box p.sub {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .form-group {
+            margin-bottom: 18px;
+        }
+        #loginOverlay .login-box .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+        #loginOverlay .login-box .form-group input {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            font-size: 14px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .form-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        #loginOverlay .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #loginOverlay .login-box .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42,82,152,0.3);
+        }
+        #loginOverlay .login-box .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #loginOverlay .login-box .login-error {
+            color: #dc3545;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        #loginOverlay .login-box .login-error.show { display: block; }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .header-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            min-height: 48px;
+        }
+        .header-row2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .header-logo {
+            height: 42px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-counts {
+            display: flex;
+            align-items: center;
+            gap: 8px 14px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: center;
+        }
+        .header-counts .count-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.1);
+            padding: 3px 12px 3px 10px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-counts .count-chip .count-label {
+            opacity: 0.7;
+            font-weight: 400;
+            font-size: 11px;
+        }
+        .header-counts .count-chip .count-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .header-counts .count-chip.total .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.active .count-value { color: #81c784; }
+        .header-counts .count-chip.lm .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.ls .count-value { color: #ffb74d; }
+        .header-counts .count-chip.lt .count-value { color: #ce93d8; }
+        .header-counts .count-divider {
+            color: rgba(255,255,255,0.15);
+            font-size: 14px;
+            font-weight: 100;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px 4px 16px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+        .header-user .user-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .header-user .user-role {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        .header-user .logout-header-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header-user .logout-header-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            padding: 5px 16px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+        }
+        .header-stats .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 600;
+            margin-right: 4px;
+            letter-spacing: 0.3px;
+        }
+        .header-stats .rank-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 12px 2px 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-stats .rank-item .rank-name {
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .header-stats .rank-item .rank-count {
+            font-weight: 700;
+            background: rgba(255,255,255,0.15);
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        /* FILTERS */
+        .filters-section {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .filter-group label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #444;
+            margin: 0;
+        }
+        .filter-group select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 12px;
+            min-width: 120px;
+        }
+        .filter-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        .filter-group select:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .search-box {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 12px;
+            min-width: 160px;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+
+        /* FILTER REQUIRED MESSAGE */
+        .filter-required-message {
+            background: #fff3cd;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-left: 4px solid #ffc107;
+            display: none;
+            text-align: center;
+        }
+        .filter-required-message.show {
+            display: block;
+        }
+        .filter-required-message i {
+            color: #ff9800;
+            margin-right: 8px;
+        }
+        .filter-required-message span {
+            font-size: 13px;
+            color: #856404;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .stats-bar .stat-item { font-size: 12px; color: #555; }
+        .stats-bar .stat-item strong { color: #1a3a6b; font-size: 14px; }
+        .stats-bar .stat-item.required-strength strong { color: #dc3545; }
+        .stats-bar .stat-divider { color: #ddd; }
+
+        /* EMPLOYEE GRID */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        /* EMPLOYEE CARD - All cards identical */
+        .employee-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            overflow: hidden;
+            transition: all 0.25s ease;
+            border: 1px solid #e8ecf1;
+            display: flex;
+            flex-direction: column;
+        }
+        .employee-card:hover {
+            box-shadow: 0 6px 25px rgba(0,0,0,0.10);
+            transform: translateY(-3px);
+        }
+        .card-header {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card-header .name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a3a6b;
+        }
+        .card-header .badge-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .card-header .role-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .role-badge.admin { background: #dc3545; color: white; }
+        .role-badge.icd-head { background: #ff9800; color: white; }
+        .role-badge.employee { background: #2a5298; color: white; }
+        .role-badge.unknown { background: #6c757d; color: white; }
+        .rank-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #e8ecf1;
+            color: #333;
+        }
+        .rank-badge.A { background: #28a745; color: white; }
+        .rank-badge.B { background: #2a5298; color: white; }
+        .rank-badge.C { background: #ff9800; color: white; }
+        .rank-badge.D { background: #dc3545; color: white; }
+
+        /* Department Badge */
+        .dept-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .dept-badge.LM { background: #1a3a6b; color: white; }
+        .dept-badge.LS { background: #6f42c1; color: white; }
+        .dept-badge.LT { background: #dc3545; color: white; }
+
+        .card-body { padding: 12px 16px 14px; flex: 1; }
+        .detail-row-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 6px;
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 3px;
+            align-items: baseline;
+        }
+        .detail-row-inline .label {
+            color: #888;
+            font-weight: 500;
+        }
+        .detail-row-inline .value {
+            color: #222;
+            word-break: break-word;
+        }
+        .detail-row-inline .divider {
+            color: #ccc;
+            margin: 0 3px;
+        }
+
+        .job-profile-section {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #f0f2f5;
+        }
+        .job-profile-section .jp-label {
+            font-weight: 600;
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        .job-profile-section .jp-value {
+            font-size: 12px;
+            color: #222;
+            background: #f5f7fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Pages Data Section in Card - NO Required Strength */
+        .pages-data-section {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 2px solid #e8ecf1;
+            background: #f8faff;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .pages-data-section .pages-title {
+            font-weight: 600;
+            font-size: 11px;
+            color: #1a3a6b;
+            margin-bottom: 4px;
+        }
+        .pages-data-section .pages-title i {
+            color: #2a5298;
+            margin-right: 4px;
+        }
+        .pages-data-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+        .pages-data-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #444;
+        }
+        .pages-data-item .pd-label {
+            color: #888;
+            font-weight: 400;
+        }
+        .pages-data-item .pd-value {
+            font-weight: 600;
+            color: #1a3a6b;
+            background: #e8ecf1;
+            padding: 0 6px;
+            border-radius: 3px;
+        }
+        .pages-data-item .pd-value.empty {
+            color: #999;
+            background: #f0f0f0;
+        }
+        .pages-data-item .pd-value.fresh { color: #28a745; }
+        .pages-data-item .pd-value.alter { color: #ff9800; }
+
+        .card-footer {
+            padding: 8px 16px 12px;
+            border-top: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #fafbfc;
+            border-radius: 0 0 12px 12px;
+        }
+        .card-footer .age-badge {
+            font-size: 11px;
+            color: #555;
+            background: #e8ecf1;
+            padding: 2px 12px;
+            border-radius: 12px;
+        }
+        .card-footer .active-status {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .card-footer .active-status.active { color: #28a745; }
+        .card-footer .active-status.inactive { color: #999; }
+        .card-footer .workplace-tag {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            background: white;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+        .no-results i { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 12px; }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        .loading-spinner i { font-size: 28px; margin-bottom: 10px; display: block; color: #2a5298; }
+
+        /* Debug console styles */
+        .debug-console {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .debug-console .debug-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #333;
+        }
+        .debug-console .debug-entry .debug-key {
+            color: #569cd6;
+        }
+        .debug-console .debug-entry .debug-value {
+            color: #ce9178;
+        }
+        .debug-console .debug-entry .debug-success {
+            color: #4ec9b0;
+        }
+        .debug-console .debug-entry .debug-error {
+            color: #f44747;
+        }
+        .debug-toggle {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .debug-toggle:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .header-row1 { flex-direction: column; align-items: center; }
+            .header-counts { justify-content: center; }
+            .filters-section { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: flex-start; }
+            .employee-grid { grid-template-columns: 1fr; }
+            .stats-bar { justify-content: center; }
+            #loginOverlay .login-box { padding: 30px 25px; margin: 15px; }
+            .pages-data-grid { flex-direction: column; gap: 4px; }
+        }
+        @media (max-width: 480px) {
+            .card-header { flex-direction: column; align-items: stretch; }
+            .card-footer { flex-direction: column; align-items: stretch; text-align: center; }
+            .header-counts .count-chip {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+            .header-counts .count-chip .count-value {
+                font-size: 12px;
+            }
+            .header-counts .count-chip .count-label {
+                font-size: 10px;
+            }
+            .stats-bar .stat-item { font-size: 11px; }
+            .stats-bar .stat-item strong { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <div class="logo">
+            <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" alt="LOKMAT">
+            <h3>Editorial Employee Directory</h3>
+            <p class="sub">Lokmat Editorial · Data & Users</p>
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>Password (Last 4 digits of Mobile)</label>
+            <input type="password" id="loginPassword" placeholder="Enter last 4 digits" maxlength="4" autocomplete="current-password">
+        </div>
+        <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+            <i class="fa fa-sign-in"></i> Sign In
+        </button>
+        <div class="login-error" id="loginError">Invalid email or password. Please try again.</div>
+    </div>
+</div>
+
+<div class="container-fluid" id="mainContent" style="display:none;">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-row1">
+            <div class="header-left">
+                <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" 
+                     alt="LOKMAT" class="header-logo" 
+                     onerror="this.style.display='none'">
+            </div>
+            
+            <div class="header-counts" id="headerCounts">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <div class="header-user">
+                <div>
+                    <div class="user-name" id="headerUserName">User</div>
+                    <div class="user-role" id="headerUserRole">Role</div>
+                </div>
+                <button class="logout-header-btn" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</button>
+            </div>
+        </div>
+        
+        <div class="header-row2" id="headerRow2"></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-section">
+        <div class="filter-group">
+            <label><i class="fa fa-folder"></i> Department</label>
+            <select id="departmentFilter" onchange="onDepartmentChange()">
+                <option value="">-- Select Department --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-building"></i> Unit</label>
+            <select id="unitFilter" onchange="onUnitChange()">
+                <option value="">-- Select Unit --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-map-marker"></i> Workplace</label>
+            <select id="workplaceFilter" onchange="applyFilters()">
+                <option value="">-- Select Workplace --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-tag"></i> Rank</label>
+            <select id="rankFilter" onchange="applyFilters()">
+                <option value="">All Ranks</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-briefcase"></i> Job Profile</label>
+            <select id="jobProfileFilter" onchange="applyFilters()">
+                <option value="">All Profiles</option>
+            </select>
+        </div>
+        <div class="filter-group" style="flex:1; justify-content:flex-end;">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search by name..." oninput="applyFilters()">
+        </div>
+    </div>
+
+    <!-- FILTER REQUIRED MESSAGE -->
+    <div class="filter-required-message" id="filterRequiredMessage">
+        <i class="fa fa-exclamation-triangle"></i>
+        <span>Please select <strong>Department</strong>, <strong>Unit</strong>, and <strong>Workplace</strong> to view employees</span>
+    </div>
+
+    <!-- DEBUG TOGGLE -->
+    <div style="text-align:right; margin-bottom: 8px;">
+        <button class="debug-toggle" onclick="toggleDebug()">
+            <i class="fa fa-bug"></i> Debug Console
+        </button>
+    </div>
+    <div class="debug-console" id="debugConsole"></div>
+
+    <!-- STATS BAR - Required Strength shown ONLY here -->
+    <div class="stats-bar" id="statsBar">
+        <span class="stat-item">👥 <strong id="displayCount">0</strong> employees</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">🏢 <strong id="displayUnits">0</strong> units</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📍 <strong id="displayWorkplaces">0</strong> workplaces</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📋 <strong id="displayDepartments">0</strong> departments</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">⭐ <strong id="displayAvgAge">0</strong> avg age</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item required-strength">💪 <strong id="displayRequiredStrength">0</strong> Required Pagination strength</span>
+    </div>
+
+    <!-- EMPLOYEE GRID -->
+    <div class="employee-grid" id="employeeGrid">
+        <div class="loading-spinner">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading employee data...
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+// UPDATE THIS URL WITH YOUR DEPLOYED WEB APP URL
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyq3U-LVPn_dmzaU1i2rx5ZU_4xxeJ0Wnb9dpXd3rI1yI3cKVQEfoLs5I019jJOiaUd/exec';
+
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+let allEmployees = [];
+let filteredEmployees = [];
+let allUsers = [];
+let activeUsers = [];
+let loggedInUser = null;
+let totalRequiredStrength = 0;
+let debugLogs = [];
+let debugEnabled = true;
+let debugCounter = 0;
+
+// ============================================================
+// DEBUG LOGGING
+// ============================================================
+function debugLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const entry = { timestamp, message, type };
+    debugLogs.push(entry);
+    
+    if (debugEnabled) {
+        const consoleEl = document.getElementById('debugConsole');
+        if (consoleEl) {
+            const colors = {
+                info: '#d4d4d4',
+                success: '#4ec9b0',
+                error: '#f44747',
+                warn: '#dcdcaa',
+                key: '#569cd6',
+                value: '#ce9178'
+            };
+            const color = colors[type] || colors.info;
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            entryDiv.innerHTML = `<span style="color:#888;">[${timestamp}]</span> <span style="color:${color};">${message}</span>`;
+            consoleEl.appendChild(entryDiv);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+    }
+    
+    console.log(`[${timestamp}] ${message}`);
+}
+
+function toggleDebug() {
+    const consoleEl = document.getElementById('debugConsole');
+    if (consoleEl.style.display === 'block') {
+        consoleEl.style.display = 'none';
+        debugEnabled = false;
+    } else {
+        consoleEl.style.display = 'block';
+        debugEnabled = true;
+        consoleEl.innerHTML = '';
+        debugLogs.forEach(entry => {
+            const colors = {
+                info: '#d4d4d4',
+                success: '#4ec9b0',
+                error: '#f44747',
+                warn: '#dcdcaa',
+                key: '#569cd6',
+                value: '#ce9178'
+            };
+            const color = colors[entry.type] || colors.info;
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            entryDiv.innerHTML = `<span style="color:#888;">[${entry.timestamp}]</span> <span style="color:${color};">${entry.message}</span>`;
+            consoleEl.appendChild(entryDiv);
+        });
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+}
+
+// ============================================================
+// LOGIN SYSTEM
+// ============================================================
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    errorEl.classList.remove('show');
+    debugLog('Attempting login for: ' + email, 'info');
+    
+    if (!email || !password) {
+        errorEl.textContent = 'Please enter both email and password.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    if (!/^\d{4}$/.test(password)) {
+        errorEl.textContent = 'Password must be exactly 4 digits.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Authenticating...';
+    
+    try {
+        const result = await callAPI('authenticateUser', { email: email, password: password });
+        debugLog('Authentication response: ' + JSON.stringify(result), result.success ? 'success' : 'error');
+        
+        if (result.success && result.user) {
+            if (result.user.role === 'Employee') {
+                errorEl.textContent = 'Access denied. Only Admin and ICD Head can login.';
+                errorEl.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+                return;
+            }
+            
+            loggedInUser = result.user;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('headerUserName').textContent = result.user.name || result.user.email;
+            
+            if (result.user.role === 'ICD Head') {
+                const unitsDisplay = result.user.units && result.user.units.length > 0 
+                    ? ' - ' + result.user.units.join(', ') 
+                    : '';
+                document.getElementById('headerUserRole').textContent = 'ICD Head' + unitsDisplay;
+            } else {
+                document.getElementById('headerUserRole').textContent = result.user.role;
+            }
+            
+            debugLog('Login successful. User: ' + result.user.name, 'success');
+            await loadAllData();
+        } else {
+            errorEl.textContent = result.message || 'Invalid email or password. Please try again.';
+            errorEl.classList.add('show');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        }
+    } catch(err) {
+        debugLog('Login error: ' + err.message, 'error');
+        errorEl.textContent = 'Error connecting to server. Please try again.';
+        errorEl.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        console.error('Login error:', err);
+    }
+}
+
+function logout() {
+    if (loggedInUser && loggedInUser.email) {
+        callAPI('logoutUser', { email: loggedInUser.email }).catch(() => {});
+        debugLog('User logged out: ' + loggedInUser.email, 'info');
+    }
+    loggedInUser = null;
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginBtn').innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+    document.getElementById('debugConsole').innerHTML = '';
+    document.getElementById('debugConsole').style.display = 'none';
+    debugLogs = [];
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('loginEmail').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+    });
+});
+
+// ============================================================
+// API CALL
+// ============================================================
+function callAPI(action, params) {
+    return new Promise((resolve, reject) => {
+        let url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+        if (params) {
+            url += '&params=' + encodeURIComponent(JSON.stringify(params));
+        }
+        
+        const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            resolve(data);
+        };
+        
+        const script = document.createElement('script');
+        script.src = url + '&callback=' + callbackName;
+        script.onerror = function() {
+            delete window[callbackName];
+            fetch(url)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(err => reject(err));
+        };
+        document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                reject(new Error('Request timeout'));
+            }
+        }, 15000);
+    });
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadAllData() {
+    try {
+        debugLog('🔄 Loading employee data...', 'info');
+        
+        const empResult = await callAPI('getEmployees', { 
+            email: loggedInUser.email,
+            role: loggedInUser.role,
+            units: loggedInUser.units || []
+        });
+        
+        if (empResult.success) {
+            allEmployees = empResult.employees || [];
+            filteredEmployees = [...allEmployees];
+            totalRequiredStrength = empResult.totalRequiredStrength || 0;
+            debugLog('✅ Employees loaded: ' + allEmployees.length, 'success');
+            debugLog('📊 Total Required Strength: ' + totalRequiredStrength, 'info');
+            
+            if (allEmployees.length > 0) {
+                const first = allEmployees[0];
+                debugLog('  Sample: ' + first.Name + ' | ' + first.Department + ' | ' + first.Unit, 'info');
+                debugLog('  DOB: ' + first.DOB, 'info');
+                debugLog('  Fresh: ' + first.FreshPagination + ' | Alter: ' + first.AlterPagination, 'info');
+            }
+        } else {
+            debugLog('❌ Failed to load employees: ' + (empResult.error || 'Unknown error'), 'error');
+            showError('Failed to load employee data: ' + (empResult.error || 'Unknown error'));
+            return;
+        }
+        
+        debugLog('🔄 Loading users data...', 'info');
+        const usersResult = await callAPI('getUsers');
+        if (usersResult.success) {
+            allUsers = usersResult.users || [];
+            activeUsers = allUsers.filter(u => u.Status && u.Status.toLowerCase() === 'active');
+            debugLog('✅ Users loaded: ' + allUsers.length + ' (Active: ' + activeUsers.length + ')', 'success');
+        } else {
+            debugLog('❌ Failed to load users: ' + usersResult.error, 'error');
+        }
+        
+        populateDepartmentFilter();
+        updateUnitDropdown();
+        updateJobProfileDropdown();
+        
+        updateHeaderStats();
+        applyFilters();
+        
+        debugLog('✅ All data loaded successfully!', 'success');
+        
+    } catch(error) {
+        debugLog('❌ Error loading data: ' + error.message, 'error');
+        console.error('Error loading data:', error);
+        showError('Error loading data: ' + error.message);
+    }
+}
+
+// ============================================================
+// POPULATE DEPARTMENT FILTER
+// ============================================================
+function populateDepartmentFilter() {
+    const deptSelect = document.getElementById('departmentFilter');
+    const departments = [...new Set(allEmployees
+        .map(emp => emp.Department)
+        .filter(d => d))].sort();
+    
+    deptSelect.innerHTML = '<option value="">-- Select Department --</option>';
+    departments.forEach(dept => {
+        const option = document.createElement('option');
+        option.value = dept;
+        option.textContent = dept;
+        deptSelect.appendChild(option);
+    });
+    debugLog('📋 Departments populated: ' + departments.length, 'info');
+}
+
+// ============================================================
+// UPDATE UNIT DROPDOWN based on Department selection
+// ============================================================
+function updateUnitDropdown() {
+    const department = document.getElementById('departmentFilter').value;
+    const unitSelect = document.getElementById('unitFilter');
+    const currentValue = unitSelect.value;
+    
+    let units = [];
+    if (department) {
+        units = [...new Set(allEmployees
+            .filter(emp => emp.Department === department)
+            .map(emp => emp.Unit)
+            .filter(u => u))];
+    } else {
+        units = [...new Set(allEmployees.map(emp => emp.Unit).filter(u => u))];
+    }
+    
+    units.sort();
+    unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
+    units.forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit;
+        option.textContent = unit;
+        unitSelect.appendChild(option);
+    });
+    
+    if (currentValue && units.includes(currentValue)) {
+        unitSelect.value = currentValue;
+    }
+    
+    updateWorkplaceDropdown();
+    debugLog('📋 Units populated: ' + units.length + ' (Department: ' + (department || 'All') + ')', 'info');
+}
+
+// ============================================================
+// UPDATE WORKPLACE DROPDOWN based on Department + Unit
+// ============================================================
+function updateWorkplaceDropdown() {
+    const department = document.getElementById('departmentFilter').value;
+    const unit = document.getElementById('unitFilter').value;
+    const workplaceSelect = document.getElementById('workplaceFilter');
+    const currentValue = workplaceSelect.value;
+    
+    let workplaces = [];
+    if (department && unit) {
+        workplaces = [...new Set(allEmployees
+            .filter(emp => emp.Department === department && emp.Unit === unit)
+            .map(emp => emp.WorkPlace)
+            .filter(wp => wp))];
+    } else if (department) {
+        workplaces = [...new Set(allEmployees
+            .filter(emp => emp.Department === department)
+            .map(emp => emp.WorkPlace)
+            .filter(wp => wp))];
+    } else {
+        workplaces = [...new Set(allEmployees.map(emp => emp.WorkPlace).filter(wp => wp))];
+    }
+    
+    workplaces.sort();
+    workplaceSelect.innerHTML = '<option value="">-- Select Workplace --</option>';
+    workplaces.forEach(wp => {
+        const option = document.createElement('option');
+        option.value = wp;
+        option.textContent = wp;
+        workplaceSelect.appendChild(option);
+    });
+    
+    if (currentValue && workplaces.includes(currentValue)) {
+        workplaceSelect.value = currentValue;
+    }
+}
+
+// ============================================================
+// UPDATE JOB PROFILE DROPDOWN
+// ============================================================
+function updateJobProfileDropdown() {
+    const jobProfileSelect = document.getElementById('jobProfileFilter');
+    const currentValue = jobProfileSelect.value;
+    
+    const profiles = [...new Set(allEmployees
+        .map(emp => emp.JobProfile)
+        .filter(p => p && p.trim() !== '' && p.trim() !== '-'))];
+    
+    profiles.sort();
+    
+    jobProfileSelect.innerHTML = '<option value="">All Profiles</option>';
+    profiles.forEach(profile => {
+        const option = document.createElement('option');
+        option.value = profile;
+        option.textContent = profile;
+        jobProfileSelect.appendChild(option);
+    });
+    
+    if (currentValue && profiles.includes(currentValue)) {
+        jobProfileSelect.value = currentValue;
+    }
+}
+
+// ============================================================
+// FILTER CHANGE HANDLERS
+// ============================================================
+function onDepartmentChange() {
+    updateUnitDropdown();
+    applyFilters();
+}
+
+function onUnitChange() {
+    updateWorkplaceDropdown();
+    applyFilters();
+}
+
+// ============================================================
+// UPDATE HEADER STATS
+// ============================================================
+function updateHeaderStats() {
+    const countsContainer = document.getElementById('headerCounts');
+    const rankContainer = document.getElementById('headerRow2');
+    
+    if (!loggedInUser) { 
+        countsContainer.innerHTML = ''; 
+        rankContainer.innerHTML = ''; 
+        return; 
+    }
+    
+    let total = allEmployees.length;
+    let activeCount = activeUsers.length;
+    
+    let lmCount = 0, lsCount = 0, ltCount = 0;
+    allEmployees.forEach(emp => {
+        const dept = emp.Department || '';
+        if (dept.includes('LM-')) lmCount++;
+        else if (dept.includes('LS-')) lsCount++;
+        else if (dept.includes('LT-')) ltCount++;
+    });
+    
+    countsContainer.innerHTML = `
+        <span class="count-chip total">
+            <span class="count-label">Total</span>
+            <span class="count-value">${total}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lm">
+            <span class="count-label">LM</span>
+            <span class="count-value">${lmCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip ls">
+            <span class="count-label">LS</span>
+            <span class="count-value">${lsCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lt">
+            <span class="count-label">LT</span>
+            <span class="count-value">${ltCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip active">
+            <span class="count-label">Active</span>
+            <span class="count-value">${activeCount}</span>
+        </span>
+    `;
+    
+    const rankCounts = { A: 0, B: 0, C: 0, D: 0 };
+    allEmployees.forEach(emp => {
+        const rank = (emp.Rank || '').toUpperCase();
+        if (rankCounts.hasOwnProperty(rank)) {
+            rankCounts[rank]++;
+        }
+    });
+    
+    let rankHtml = '';
+    const rankOrder = ['A', 'B', 'C', 'D'];
+    rankOrder.forEach(rank => {
+        const count = rankCounts[rank] || 0;
+        if (count > 0) {
+            rankHtml += `<span class="rank-item"><span class="rank-name">Rank ${rank}</span><span class="rank-count">${count}</span></span>`;
+        }
+    });
+    
+    if (rankHtml) {
+        rankContainer.innerHTML = `
+            <div class="header-stats">
+                <span class="stat-label">Rank Distribution:</span>
+                ${rankHtml}
+            </div>
+        `;
+    } else {
+        rankContainer.innerHTML = '';
+    }
+}
+
+// ============================================================
+// APPLY FILTERS
+// ============================================================
+function applyFilters() {
+    const department = document.getElementById('departmentFilter').value;
+    const unit = document.getElementById('unitFilter').value;
+    const workplace = document.getElementById('workplaceFilter').value;
+    const rank = document.getElementById('rankFilter').value;
+    const jobProfile = document.getElementById('jobProfileFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    
+    const filterMsg = document.getElementById('filterRequiredMessage');
+    
+    if (!department || !unit || !workplace) {
+        filterMsg.classList.add('show');
+        document.getElementById('employeeGrid').innerHTML = '';
+        document.getElementById('displayCount').textContent = '0';
+        document.getElementById('displayUnits').textContent = '0';
+        document.getElementById('displayWorkplaces').textContent = '0';
+        document.getElementById('displayDepartments').textContent = '0';
+        document.getElementById('displayAvgAge').textContent = '0';
+        document.getElementById('displayRequiredStrength').textContent = '0';
+        return;
+    }
+    
+    filterMsg.classList.remove('show');
+    
+    filteredEmployees = allEmployees.filter(emp => {
+        if (!emp.Name) return false;
+        if (department && emp.Department !== department) return false;
+        if (unit && emp.Unit !== unit) return false;
+        if (workplace && emp.WorkPlace !== workplace) return false;
+        if (rank && emp.Rank !== rank) return false;
+        if (jobProfile && emp.JobProfile !== jobProfile) return false;
+        if (searchTerm && !emp.Name.toLowerCase().includes(searchTerm)) return false;
+        return true;
+    });
+    
+    debugLog('🔍 Filters applied: ' + filteredEmployees.length + ' employees found', 'info');
+    renderEmployees(filteredEmployees);
+    updateDisplayStats(department, unit, workplace);
+}
+
+// ============================================================
+// UPDATE DISPLAY STATS - Required Strength counted once per unit
+// ============================================================
+function updateDisplayStats(department, unit, workplace) {
+    const units = new Set();
+    const workplaces = new Set();
+    const departments = new Set();
+    let totalAge = 0;
+    let ageCount = 0;
+    let requiredStrength = 0;
+    
+    // Track which units we've already counted for Required Strength
+    const countedUnits = new Set();
+    
+    filteredEmployees.forEach(emp => {
+        if (emp.Unit) units.add(emp.Unit);
+        if (emp.WorkPlace) workplaces.add(emp.WorkPlace);
+        if (emp.Department) departments.add(emp.Department);
+        if (emp.Age) {
+            totalAge += parseInt(emp.Age) || 0;
+            ageCount++;
+        }
+        // Only add Required Strength once per Unit
+        if (emp.Unit && emp.RequiredStrength && !countedUnits.has(emp.Unit)) {
+            const reqStrength = parseFloat(emp.RequiredStrength) || 0;
+            if (reqStrength > 0) {
+                requiredStrength += reqStrength;
+                countedUnits.add(emp.Unit);
+            }
+        }
+    });
+    
+    document.getElementById('displayCount').textContent = filteredEmployees.length;
+    document.getElementById('displayUnits').textContent = units.size;
+    document.getElementById('displayWorkplaces').textContent = workplaces.size;
+    document.getElementById('displayDepartments').textContent = departments.size;
+    document.getElementById('displayAvgAge').textContent = ageCount > 0 ? Math.round(totalAge / ageCount) : 0;
+    document.getElementById('displayRequiredStrength').textContent = requiredStrength;
+}
+
+// ============================================================
+// RENDER EMPLOYEES
+// ============================================================
+function renderEmployees(employees) {
+    const grid = document.getElementById('employeeGrid');
+    
+    if (employees.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fa fa-search"></i>
+                No employees found matching the current filters
+                <br><small style="color:#aaa;">Try adjusting your filters or search terms</small>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    employees.forEach(emp => {
+        html += buildEmployeeCard(emp);
+    });
+    grid.innerHTML = html;
+}
+
+// ============================================================
+// BUILD EMPLOYEE CARD - NO Required Strength in card
+// ============================================================
+function buildEmployeeCard(emp) {
+    let roleClass = 'unknown';
+    let roleText = emp.Role || 'Employee';
+    if (roleText === 'Admin') { roleClass = 'admin'; }
+    else if (roleText === 'ICD Head') { roleClass = 'icd-head'; }
+    else if (roleText === 'Employee') { roleClass = 'employee'; }
+    
+    let rankClass = '';
+    let rankText = emp.Rank || '';
+    if (rankText === 'A') rankClass = 'A';
+    else if (rankText === 'B') rankClass = 'B';
+    else if (rankText === 'C') rankClass = 'C';
+    else if (rankText === 'D') rankClass = 'D';
+    
+    let deptClass = '';
+    let deptText = emp.Department || '';
+    if (deptText.includes('LM')) deptClass = 'LM';
+    else if (deptText.includes('LS')) deptClass = 'LS';
+    else if (deptText.includes('LT')) deptClass = 'LT';
+    
+    const isActive = activeUsers.some(u => u.Email && u.Email.toLowerCase() === (emp.Email || '').toLowerCase());
+    const activeStatusHtml = isActive ? 
+        '<span class="active-status active"><i class="fa fa-circle"></i> Active</span>' : 
+        '<span class="active-status inactive"><i class="fa fa-circle-o"></i> Inactive</span>';
+    
+    // Get pagination data from employee object
+    let freshPagination = '-';
+    let alterPagination = '-';
+    
+    // Fresh Pagination
+    if (emp.FreshPagination !== undefined && emp.FreshPagination !== null && !isNaN(emp.FreshPagination)) {
+        freshPagination = emp.FreshPagination === 0 ? '-' : emp.FreshPagination;
+    }
+    
+    // Alter Pagination
+    if (emp.AlterPagination !== undefined && emp.AlterPagination !== null && !isNaN(emp.AlterPagination)) {
+        alterPagination = emp.AlterPagination === 0 ? '-' : emp.AlterPagination;
+    }
+    
+    // Debug logging for first 5 employees
+    if (debugCounter < 5) {
+        debugLog(
+            '🔍 Emp #' + (debugCounter + 1) + ': ' + emp.Name + 
+            ' | Unit: ' + (emp.Unit || '—') +
+            ' | DOB: ' + (emp.DOB || '—') +
+            ' | Fresh: ' + freshPagination + 
+            ' | Alter: ' + alterPagination,
+            'info'
+        );
+        debugCounter++;
+    }
+    
+    let detailHtml = `
+        <div class="detail-row-inline">
+            <span class="label">Department</span>
+            <span class="value">${escapeHtml(emp.Department || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Unit</span>
+            <span class="value">${escapeHtml(emp.Unit || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Designation</span>
+            <span class="value">${escapeHtml(emp.Designation || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Emp Code</span>
+            <span class="value">${escapeHtml(emp.EmpCode || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">DOB</span>
+            <span class="value">${escapeHtml(emp.DOB || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">Age</span>
+            <span class="value">${escapeHtml(emp.Age || '—')} years</span>
+        </div>
+    `;
+    
+    let jobProfileHtml = '';
+    if (emp.JobProfile && emp.JobProfile.trim() !== '' && emp.JobProfile.trim() !== '-') {
+        jobProfileHtml = `
+            <div class="job-profile-section">
+                <div class="jp-label"><i class="fa fa-briefcase"></i> Job Profile</div>
+                <span class="jp-value">${escapeHtml(emp.JobProfile)}</span>
+            </div>
+        `;
+    }
+    
+    // Pages data section - NO Required Strength
+    let pagesHtml = `
+        <div class="pages-data-section">
+            <div class="pages-title"><i class="fa fa-file-text-o"></i> Pages Data</div>
+            <div class="pages-data-grid">
+                <div class="pages-data-item">
+                    <span class="pd-label">📄 Fresh Pagination:</span>
+                    <span class="pd-value ${freshPagination !== '-' ? 'fresh' : 'empty'}">${freshPagination}</span>
+                </div>
+                <div class="pages-data-item">
+                    <span class="pd-label">🔄 Alter Pagination:</span>
+                    <span class="pd-value ${alterPagination !== '-' ? 'alter' : 'empty'}">${alterPagination}</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return `
+        <div class="employee-card">
+            <div class="card-header">
+                <span class="name">${escapeHtml(emp.Name)}</span>
+                <div class="badge-group">
+                    ${rankText ? `<span class="rank-badge ${rankClass}">Rank ${escapeHtml(rankText)}</span>` : ''}
+                    ${deptText ? `<span class="dept-badge ${deptClass}">${escapeHtml(deptText)}</span>` : ''}
+                    <span class="role-badge ${roleClass}">${roleText}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                ${detailHtml}
+                ${jobProfileHtml}
+                ${pagesHtml}
+            </div>
+            <div class="card-footer">
+                <span class="workplace-tag">📍 ${escapeHtml(emp.WorkPlace || '—')}</span>
+                ${activeStatusHtml}
+            </div>
+        </div>
+    `;
+}
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    const grid = document.getElementById('employeeGrid');
+    grid.innerHTML = `
+        <div class="no-results" style="border-left: 4px solid #dc3545;">
+            <i class="fa fa-exclamation-triangle" style="color:#dc3545;"></i>
+            ${escapeHtml(message)}
+            <br><small style="color:#aaa;">Please check your API URL and try again</small>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
