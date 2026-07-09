@@ -245,9 +245,9 @@
             border-radius: 4px;
             border: 1px solid rgba(255,255,255,0.2);
         }
-        .color-legend .legend-color.lm { background: #1a3a6b; }
-        .color-legend .legend-color.ls { background: #6f42c1; }
-        .color-legend .legend-color.lt { background: #c0392b; }
+        .color-legend .legend-color.lm { background: #c79306; }
+        .color-legend .legend-color.ls { background: #2245f2; }
+        .color-legend .legend-color.lt { background: #2a9922; }
 
         .header-stats {
             display: flex;
@@ -401,6 +401,7 @@
         .stats-bar .pages-stats .ps-item .ps-value.fresh { color: #28a745; }
         .stats-bar .pages-stats .ps-item .ps-value.alter { color: #ff9800; }
         .stats-bar .pages-stats .ps-item .ps-value.required { color: #dc3545; }
+        .stats-bar .pages-stats .ps-item .ps-value.not-found { color: #999; font-weight: 400; }
 
         /* EMPLOYEE GRID */
         .employee-grid {
@@ -409,7 +410,7 @@
             gap: 16px;
         }
 
-        /* EMPLOYEE CARD - Color coded by department */
+        /* EMPLOYEE CARD */
         .employee-card {
             background: white;
             border-radius: 12px;
@@ -424,10 +425,10 @@
             box-shadow: 0 6px 25px rgba(0,0,0,0.10);
             transform: translateY(-3px);
         }
-        /* Department Color Borders */
-        .employee-card.dept-lm { border-left-color: #1a3a6b; }
-        .employee-card.dept-ls { border-left-color: #6f42c1; }
-        .employee-card.dept-lt { border-left-color: #c0392b; }
+
+        .employee-card.dept-lm { border-left-color: #c79306; }
+        .employee-card.dept-ls { border-left-color: #2245f2; }
+        .employee-card.dept-lt { border-left-color: #2a9922; }
         .employee-card.dept-unknown { border-left-color: #6c757d; }
 
         .card-header {
@@ -472,7 +473,6 @@
         .rank-badge.C { background: #ff9800; color: white; }
         .rank-badge.D { background: #dc3545; color: white; }
 
-        /* Department badge with color */
         .dept-badge {
             font-size: 10px;
             padding: 2px 10px;
@@ -576,7 +576,7 @@
             margin-bottom: 18px;
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 12px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             display: none;
         }
@@ -584,6 +584,11 @@
             padding: 2px 0;
             border-bottom: 1px solid #333;
         }
+        .debug-console .debug-entry .debug-key { color: #569cd6; }
+        .debug-console .debug-entry .debug-value { color: #ce9178; }
+        .debug-console .debug-entry .debug-success { color: #4ec9b0; }
+        .debug-console .debug-entry .debug-error { color: #f44747; }
+        .debug-console .debug-entry .debug-warn { color: #dcdcaa; }
         .debug-toggle {
             background: none;
             border: none;
@@ -673,7 +678,6 @@
         </div>
         
         <div class="header-row2" id="headerRow2">
-            <!-- Color Legend -->
             <div class="color-legend">
                 <span class="legend-title">📌 Department Colors:</span>
                 <span class="legend-item">
@@ -689,7 +693,7 @@
         </div>
     </div>
 
-    <!-- FILTERS - New Hierarchy: Unit → Workplace → Department -->
+    <!-- FILTERS - Hierarchy: Unit → Workplace → Department -->
     <div class="filters-section">
         <div class="filter-group">
             <label><i class="fa fa-building"></i> Unit</label>
@@ -763,16 +767,16 @@
         <span class="stat-divider" id="pagesDivider">|</span>
         <span class="pages-stats" id="pagesStats">
             <span class="ps-item">
-                <span class="ps-label">📄 Fresh:</span>
-                <span class="ps-value fresh" id="displayFresh">—</span>
+                <span class="ps-label">📄 Fresh Pagination:</span>
+                <span class="ps-value" id="displayFresh">—</span>
             </span>
             <span class="ps-item">
-                <span class="ps-label">🔄 Alter:</span>
-                <span class="ps-value alter" id="displayAlter">—</span>
+                <span class="ps-label">🔄 Alter Pagination:</span>
+                <span class="ps-value" id="displayAlter">—</span>
             </span>
             <span class="ps-item">
-                <span class="ps-label">💪 Required:</span>
-                <span class="ps-value required" id="displayRequired">—</span>
+                <span class="ps-label">💪 Strength Required for Pagination:</span>
+                <span class="ps-value" id="displayRequired">—</span>
             </span>
         </span>
     </div>
@@ -791,7 +795,8 @@
 // ============================================================
 // CONFIGURATION
 // ============================================================
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzzTRDcOV_tCJsZlzwUOoWRFyD6VQRcDDhE3ANZD2kOqqqAn32tjxuXcTrBw50aY4Dj/exec';
+// UPDATE THIS URL WITH YOUR DEPLOYED WEB APP URL
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbw_RAQT2_f_IAho34qPZ9FolLkxCAqDibYIgBI1fOc6l7GuQzgTMjilbYPhk3tM8_8t/exec';
 
 // ============================================================
 // GLOBAL STATE
@@ -961,6 +966,7 @@ function logout() {
     document.getElementById('debugConsole').innerHTML = '';
     document.getElementById('debugConsole').style.display = 'none';
     debugLogs = [];
+    pagesData = {};
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1009,12 +1015,13 @@ function callAPI(action, params) {
 }
 
 // ============================================================
-// LOAD DATA
+// LOAD DATA - FIXED: Pages data now includes email
 // ============================================================
 async function loadAllData() {
     try {
         debugLog('🔄 Loading employee data...', 'info');
         
+        // Load employees
         const empResult = await callAPI('getEmployees', { 
             email: loggedInUser.email,
             role: loggedInUser.role,
@@ -1025,12 +1032,16 @@ async function loadAllData() {
             allEmployees = empResult.employees || [];
             filteredEmployees = [...allEmployees];
             debugLog('✅ Employees loaded: ' + allEmployees.length, 'success');
+            if (allEmployees.length > 0) {
+                debugLog('  Sample: ' + allEmployees[0].Name + ' | Unit: ' + allEmployees[0].Unit + ' | Dept: ' + allEmployees[0].Department, 'info');
+            }
         } else {
             debugLog('❌ Failed to load employees: ' + (empResult.error || 'Unknown error'), 'error');
             showError('Failed to load employee data: ' + (empResult.error || 'Unknown error'));
             return;
         }
         
+        // Load users
         debugLog('🔄 Loading users data...', 'info');
         const usersResult = await callAPI('getUsers');
         if (usersResult.success) {
@@ -1041,7 +1052,7 @@ async function loadAllData() {
             debugLog('❌ Failed to load users: ' + usersResult.error, 'error');
         }
         
-        // Load Units with counts (PRIMARY FILTER)
+        // Load Units with counts
         debugLog('🔄 Loading unit data...', 'info');
         const unitResult = await callAPI('getUnitsWithCounts', {
             email: loggedInUser.email,
@@ -1058,7 +1069,7 @@ async function loadAllData() {
             debugLog('❌ Failed to load units: ' + unitResult.error, 'error');
         }
         
-        // Load Departments with counts (TERTIARY FILTER)
+        // Load Departments with counts
         debugLog('🔄 Loading department data...', 'info');
         const deptResult = await callAPI('getDepartmentsWithCounts', {
             email: loggedInUser.email,
@@ -1075,17 +1086,32 @@ async function loadAllData() {
             debugLog('❌ Failed to load departments: ' + deptResult.error, 'error');
         }
         
-        // Load Pages data
+        // ============================================================
+        // FIXED: Load Pages data with email
+        // ============================================================
         debugLog('🔄 Loading pages data...', 'info');
-        const pagesResult = await callAPI('getPagesData');
+        const pagesResult = await callAPI('getPagesData', {
+            email: loggedInUser.email  // ← CRITICAL FIX: Email must be sent!
+        });
+        
         if (pagesResult.success) {
             pagesData = pagesResult.data || {};
-            debugLog('✅ Pages data loaded: ' + Object.keys(pagesData).length + ' entries', 'success');
+            const count = Object.keys(pagesData).length;
+            debugLog('✅ Pages data loaded: ' + count + ' entries', 'success');
+            debugLog('📋 Pages keys: ' + Object.keys(pagesData).join(', '), 'info');
+            
+            // Log sample data for debugging
+            const sampleKeys = Object.keys(pagesData).slice(0, 3);
+            sampleKeys.forEach(key => {
+                const data = pagesData[key];
+                debugLog('  📄 ' + key + ' → Fresh: ' + data.freshPagination + ', Alter: ' + data.alterPagination + ', Required: ' + data.requiredStrength, 'info');
+            });
         } else {
-            debugLog('❌ Failed to load pages data: ' + pagesResult.error, 'error');
+            debugLog('❌ Failed to load pages data: ' + (pagesResult.error || 'Unknown error'), 'error');
+            pagesData = {};
         }
         
-        // Populate filters in correct order: Unit → Workplace → Department
+        // Populate filters
         populateUnitFilter();
         populateWorkplaceFilter();
         populateDepartmentFilter();
@@ -1104,7 +1130,7 @@ async function loadAllData() {
 }
 
 // ============================================================
-// POPULATE UNIT FILTER (PRIMARY)
+// POPULATE UNIT FILTER
 // ============================================================
 function populateUnitFilter() {
     const unitSelect = document.getElementById('unitFilter');
@@ -1144,7 +1170,7 @@ function populateUnitFilter() {
 }
 
 // ============================================================
-// POPULATE WORKPLACE FILTER (SECONDARY)
+// POPULATE WORKPLACE FILTER
 // ============================================================
 function populateWorkplaceFilter() {
     const unit = document.getElementById('unitFilter').value;
@@ -1199,7 +1225,7 @@ function populateWorkplaceFilter() {
 }
 
 // ============================================================
-// POPULATE DEPARTMENT FILTER (TERTIARY)
+// POPULATE DEPARTMENT FILTER
 // ============================================================
 function populateDepartmentFilter() {
     const unit = document.getElementById('unitFilter').value;
@@ -1428,7 +1454,7 @@ function applyFilters() {
 }
 
 // ============================================================
-// UPDATE DISPLAY STATS
+// UPDATE DISPLAY STATS - FIXED: Pages data lookup
 // ============================================================
 function updateDisplayStats(unit, workplace, department) {
     const units = new Set();
@@ -1436,6 +1462,7 @@ function updateDisplayStats(unit, workplace, department) {
     let totalAge = 0;
     let ageCount = 0;
     
+    // Get actual values (not "__ALL__")
     const actualUnit = (unit && unit !== '__ALL__') ? unit : null;
     const actualDepartment = (department && department !== '__ALL__') ? department : null;
     
@@ -1453,6 +1480,9 @@ function updateDisplayStats(unit, workplace, department) {
     document.getElementById('displayWorkplaces').textContent = workplaces.size;
     document.getElementById('displayAvgAge').textContent = ageCount > 0 ? Math.round(totalAge / ageCount) : 0;
     
+    // ============================================================
+    // PAGES DATA LOOKUP - ONLY when specific Unit AND Department selected
+    // ============================================================
     let freshPagination = '—';
     let alterPagination = '—';
     let requiredStrength = '—';
@@ -1461,15 +1491,28 @@ function updateDisplayStats(unit, workplace, department) {
         const compositeKey = actualDepartment + '|' + actualUnit;
         const pageData = pagesData[compositeKey] || {};
         
-        if (pageData.freshPagination !== undefined && pageData.freshPagination !== null && !isNaN(pageData.freshPagination)) {
-            freshPagination = pageData.freshPagination === 0 ? '—' : pageData.freshPagination;
+        debugLog('🔍 Looking for pages data: ' + compositeKey, 'info');
+        debugLog('📋 Available pages keys: ' + Object.keys(pagesData).join(', '), 'info');
+        
+        if (pageData && Object.keys(pageData).length > 0) {
+            if (pageData.freshPagination !== undefined && pageData.freshPagination !== null && !isNaN(pageData.freshPagination)) {
+                freshPagination = pageData.freshPagination === 0 ? '—' : pageData.freshPagination;
+            }
+            if (pageData.alterPagination !== undefined && pageData.alterPagination !== null && !isNaN(pageData.alterPagination)) {
+                alterPagination = pageData.alterPagination === 0 ? '—' : pageData.alterPagination;
+            }
+            if (pageData.requiredStrength !== undefined && pageData.requiredStrength !== null && !isNaN(pageData.requiredStrength)) {
+                requiredStrength = pageData.requiredStrength === 0 ? '—' : pageData.requiredStrength;
+            }
+            debugLog('✅ Found pages data: Fresh=' + freshPagination + ', Alter=' + alterPagination + ', Required=' + requiredStrength, 'success');
+        } else {
+            debugLog('❌ No pages data found for key: ' + compositeKey, 'error');
+            debugLog('💡 Tip: Check if "' + actualDepartment + '" and "' + actualUnit + '" exactly match the Pages sheet', 'warn');
         }
-        if (pageData.alterPagination !== undefined && pageData.alterPagination !== null && !isNaN(pageData.alterPagination)) {
-            alterPagination = pageData.alterPagination === 0 ? '—' : pageData.alterPagination;
-        }
-        if (pageData.requiredStrength !== undefined && pageData.requiredStrength !== null && !isNaN(pageData.requiredStrength)) {
-            requiredStrength = pageData.requiredStrength === 0 ? '—' : pageData.requiredStrength;
-        }
+    } else {
+        if (!actualDepartment) debugLog('ℹ️ Department not selected (using All Departments)', 'info');
+        if (!actualUnit) debugLog('ℹ️ Unit not selected (using All Units)', 'info');
+        debugLog('ℹ️ Pages data requires specific Department AND Unit selection', 'info');
     }
     
     document.getElementById('displayFresh').textContent = freshPagination;
@@ -1502,7 +1545,7 @@ function renderEmployees(employees) {
 }
 
 // ============================================================
-// BUILD EMPLOYEE CARD - Color coded by department
+// BUILD EMPLOYEE CARD
 // ============================================================
 function buildEmployeeCard(emp) {
     let roleClass = 'unknown';
@@ -1518,7 +1561,6 @@ function buildEmployeeCard(emp) {
     else if (rankText === 'C') rankClass = 'C';
     else if (rankText === 'D') rankClass = 'D';
     
-    // Department color class
     const deptClass = getDeptClass(emp.Department);
     let deptBadgeClass = 'unknown';
     let deptDisplay = emp.Department || '—';
@@ -1535,7 +1577,7 @@ function buildEmployeeCard(emp) {
         debugLog(
             '🔍 Emp #' + (debugCounter + 1) + ': ' + emp.Name + 
             ' | Dept: ' + (emp.Department || '—') +
-            ' | Color: ' + deptClass,
+            ' | Unit: ' + (emp.Unit || '—'),
             'info'
         );
         debugCounter++;
