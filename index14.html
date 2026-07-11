@@ -996,6 +996,7 @@ function getDeptClass(dept) {
 
 // ============================================================
 // HELPER: Calculate Reliever and Total
+// Formula: Reliever = Math.floor((Required + 2) / 5)
 // ============================================================
 function calculateRelieverAndTotal(requiredValue) {
     // If required is 0, null, undefined, or not a number
@@ -1014,8 +1015,8 @@ function calculateRelieverAndTotal(requiredValue) {
         };
     }
     
-    // Calculate Reliever using the formula: Math.floor((Required + 1) / 3)
-    const reliever = Math.floor((required + 1) / 3);
+    // Calculate Reliever using the formula: Math.floor((Required + 2) / 5)
+    const reliever = Math.floor((required + 2) / 5);
     
     // Total = Required + Reliever
     const total = required + reliever;
