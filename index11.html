@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokmat Editorial Employee Directory</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container-fluid { max-width: 1400px; margin: 0 auto; }
+
+        /* LOGIN OVERLAY */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #loginOverlay .login-box {
+            background: white;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .logo img {
+            width: 100%;
+            height: auto;
+            max-height: 80px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 8px;
+        }
+        #loginOverlay .login-box h3 {
+            text-align: center;
+            color: #1a3a6b;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        #loginOverlay .login-box p.sub {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        #loginOverlay .login-box .form-group {
+            margin-bottom: 18px;
+        }
+        #loginOverlay .login-box .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+        }
+        #loginOverlay .login-box .form-group input {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            font-size: 14px;
+            width: 100%;
+        }
+        #loginOverlay .login-box .form-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        #loginOverlay .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #loginOverlay .login-box .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(42,82,152,0.3);
+        }
+        #loginOverlay .login-box .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #loginOverlay .login-box .login-error {
+            color: #dc3545;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            display: none;
+        }
+        #loginOverlay .login-box .login-error.show { display: block; }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1a3a6b 0%, #2a5298 100%);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .header-row1 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            min-height: 48px;
+        }
+        .header-row2 {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin-top: 6px;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .header-logo {
+            height: 42px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-counts {
+            display: flex;
+            align-items: center;
+            gap: 8px 14px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: center;
+        }
+        .header-counts .count-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.1);
+            padding: 3px 12px 3px 10px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-counts .count-chip .count-label {
+            opacity: 0.7;
+            font-weight: 400;
+            font-size: 11px;
+        }
+        .header-counts .count-chip .count-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .header-counts .count-chip.total .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.active .count-value { color: #81c784; }
+        .header-counts .count-chip.lm .count-value { color: #7eb8ff; }
+        .header-counts .count-chip.ls .count-value { color: #ffb74d; }
+        .header-counts .count-chip.lt .count-value { color: #ce93d8; }
+        .header-counts .count-divider {
+            color: rgba(255,255,255,0.15);
+            font-size: 14px;
+            font-weight: 100;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px 4px 16px;
+            border-radius: 30px;
+            flex-shrink: 0;
+        }
+        .header-user .user-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .header-user .user-role {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        .header-user .logout-header-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .header-user .logout-header-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* COLOR LEGEND */
+        .color-legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: rgba(255,255,255,0.08);
+            padding: 4px 16px;
+            border-radius: 8px;
+        }
+        .color-legend .legend-title {
+            font-size: 11px;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+        .color-legend .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .color-legend .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .color-legend .legend-color.lm { background: #c79306; }
+        .color-legend .legend-color.ls { background: #2245f2; }
+        .color-legend .legend-color.lt { background: #2a9922; }
+
+        .header-stats {
+            display: flex;
+            gap: 8px 16px;
+            background: rgba(255,255,255,0.06);
+            padding: 5px 16px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            width: 100%;
+        }
+        .header-stats .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 600;
+            margin-right: 4px;
+            letter-spacing: 0.3px;
+        }
+        .header-stats .rank-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 12px 2px 8px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-stats .rank-item .rank-name {
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .header-stats .rank-item .rank-count {
+            font-weight: 700;
+            background: rgba(255,255,255,0.15);
+            padding: 0 6px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        /* FILTERS */
+        .filters-section {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .filter-group label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #444;
+            margin: 0;
+        }
+        .filter-group select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 12px;
+            min-width: 120px;
+        }
+        .filter-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        .filter-group select:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .search-box {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 12px;
+            min-width: 160px;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+
+        /* JOB PROFILE CHECKBOX DROPDOWN */
+        .job-profile-dropdown {
+            position: relative;
+            display: inline-block;
+            min-width: 180px;
+        }
+        .job-profile-dropdown .dropdown-toggle {
+            width: 100%;
+            padding: 5px 30px 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23999' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 10px 12px;
+        }
+        .job-profile-dropdown .dropdown-toggle:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42,82,152,0.15);
+        }
+        .job-profile-dropdown .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            padding: 6px 0;
+            margin-top: 2px;
+            min-width: 200px;
+        }
+        .job-profile-dropdown .dropdown-menu.show {
+            display: block;
+        }
+        .job-profile-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .job-profile-dropdown .dropdown-item:hover {
+            background: #f0f2f5;
+        }
+        .job-profile-dropdown .dropdown-item input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: #2a5298;
+            flex-shrink: 0;
+        }
+        .job-profile-dropdown .dropdown-item .profile-label {
+            user-select: none;
+            flex: 1;
+        }
+        .job-profile-dropdown .dropdown-item .profile-count {
+            color: #999;
+            font-size: 10px;
+            font-weight: 400;
+        }
+        .job-profile-dropdown .dropdown-menu .dropdown-divider {
+            border-top: 1px solid #eee;
+            margin: 4px 0;
+        }
+        .job-profile-dropdown .dropdown-menu .dropdown-header {
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #888;
+            background: #f8f9fa;
+        }
+
+        .filter-required-message {
+            background: #fff3cd;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-left: 4px solid #ffc107;
+            display: none;
+            text-align: center;
+        }
+        .filter-required-message.show { display: block; }
+        .filter-required-message i { color: #ff9800; margin-right: 8px; }
+        .filter-required-message span { font-size: 13px; color: #856404; }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .stats-bar .stat-item { font-size: 12px; color: #555; }
+        .stats-bar .stat-item strong { color: #1a3a6b; font-size: 14px; }
+        .stats-bar .stat-item.required-strength strong { color: #dc3545; }
+        .stats-bar .stat-divider { color: #ddd; }
+        
+        .stats-bar .pages-stats {
+            display: flex;
+            gap: 16px;
+            background: #f8faff;
+            padding: 4px 14px;
+            border-radius: 6px;
+            border: 1px solid #e8ecf1;
+            margin-left: 4px;
+            flex-wrap: wrap;
+        }
+        .stats-bar .pages-stats .ps-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #555;
+        }
+        .stats-bar .pages-stats .ps-item .ps-label {
+            color: #888;
+            font-weight: 400;
+        }
+        .stats-bar .pages-stats .ps-item .ps-value {
+            font-weight: 700;
+            color: #1a3a6b;
+        }
+        .stats-bar .pages-stats .ps-item .ps-value.fresh { color: #28a745; }
+        .stats-bar .pages-stats .ps-item .ps-value.alter { color: #ff9800; }
+        .stats-bar .pages-stats .ps-item .ps-value.required { color: #dc3545; }
+        .stats-bar .pages-stats .ps-item .ps-value.not-found { color: #999; font-weight: 400; }
+        .stats-bar .pages-stats .ps-item .ps-value.work-centre-name { color: #1a3a6b; }
+        .stats-bar .pages-stats .ps-item .editions-inline {
+            flex-wrap: wrap;
+        }
+        .stats-bar .pages-stats .ps-item .editions-list {
+            font-weight: 400;
+            color: #333;
+            font-size: 10px;
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 2px 6px;
+        }
+        .stats-bar .pages-stats .ps-item .editions-list .edition-name {
+            font-weight: 600;
+            color: #1a3a6b;
+        }
+        .stats-bar .pages-stats .ps-item .editions-list .efresh {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .stats-bar .pages-stats .ps-item .editions-list .ealter {
+            color: #ff9800;
+            font-weight: 600;
+        }
+        .ps-divider {
+            color: #ddd;
+            font-size: 14px;
+            font-weight: 100;
+        }
+
+        /* EMPLOYEE GRID */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
+        }
+
+        /* EMPLOYEE CARD */
+        .employee-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            border: 1px solid #e8ecf1;
+            display: flex;
+            flex-direction: column;
+            border-left-width: 6px;
+        }
+        .employee-card:hover {
+            box-shadow: 0 6px 25px rgba(0,0,0,0.10);
+            transform: translateY(-3px);
+        }
+
+        .employee-card.dept-lm { border-left-color: #c79306; }
+        .employee-card.dept-ls { border-left-color: #2245f2; }
+        .employee-card.dept-lt { border-left-color: #2a9922; }
+        .employee-card.dept-unknown { border-left-color: #6c757d; }
+
+        .card-header {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .card-header .name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a3a6b;
+        }
+        .card-header .badge-group {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .card-header .role-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .role-badge.admin { background: #dc3545; color: white; }
+        .role-badge.icd-head { background: #ff9800; color: white; }
+        .role-badge.employee { background: #2a5298; color: white; }
+        .role-badge.unknown { background: #6c757d; color: white; }
+        .rank-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #e8ecf1;
+            color: #333;
+        }
+        .rank-badge.A { background: #28a745; color: white; }
+        .rank-badge.B { background: #2a5298; color: white; }
+        .rank-badge.C { background: #ff9800; color: white; }
+        .rank-badge.D { background: #dc3545; color: white; }
+
+        .dept-badge {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .dept-badge.LM { background: #1a3a6b; color: white; }
+        .dept-badge.LS { background: #6f42c1; color: white; }
+        .dept-badge.LT { background: #c0392b; color: white; }
+        .dept-badge.unknown { background: #6c757d; color: white; }
+
+        .card-body { padding: 12px 16px 14px; flex: 1; }
+        .detail-row-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 6px;
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 3px;
+            align-items: baseline;
+        }
+        .detail-row-inline .label {
+            color: #888;
+            font-weight: 500;
+        }
+        .detail-row-inline .value {
+            color: #222;
+            word-break: break-word;
+        }
+        .detail-row-inline .divider {
+            color: #ccc;
+            margin: 0 3px;
+        }
+
+        .job-profile-section {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #f0f2f5;
+        }
+        .job-profile-section .jp-label {
+            font-weight: 600;
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        .job-profile-section .jp-value {
+            font-size: 12px;
+            color: #222;
+            background: #f5f7fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .card-footer {
+            padding: 8px 16px 12px;
+            border-top: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #fafbfc;
+            border-radius: 0 0 12px 12px;
+        }
+        .card-footer .active-status {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .card-footer .active-status.active { color: #28a745; }
+        .card-footer .active-status.inactive { color: #999; }
+        .card-footer .workplace-tag {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            background: white;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+        .no-results i { font-size: 36px; opacity: 0.3; display: block; margin-bottom: 12px; }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        .loading-spinner i { font-size: 28px; margin-bottom: 10px; display: block; color: #2a5298; }
+
+        /* Debug console */
+        .debug-console {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .debug-console .debug-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #333;
+        }
+        .debug-console .debug-entry .debug-key { color: #569cd6; }
+        .debug-console .debug-entry .debug-value { color: #ce9178; }
+        .debug-console .debug-entry .debug-success { color: #4ec9b0; }
+        .debug-console .debug-entry .debug-error { color: #f44747; }
+        .debug-console .debug-entry .debug-warn { color: #dcdcaa; }
+        .debug-toggle {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .debug-toggle:hover { color: #333; }
+
+        @media (max-width: 768px) {
+            .header-row1 { flex-direction: column; align-items: center; }
+            .header-counts { justify-content: center; }
+            .filters-section { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: flex-start; }
+            .employee-grid { grid-template-columns: 1fr; }
+            .stats-bar { justify-content: center; }
+            #loginOverlay .login-box { padding: 30px 25px; margin: 15px; }
+            .stats-bar .pages-stats { flex-wrap: wrap; gap: 8px; }
+            .color-legend { justify-content: center; }
+            .job-profile-dropdown { min-width: 140px; }
+            .job-profile-dropdown .dropdown-menu { max-height: 200px; }
+        }
+        @media (max-width: 480px) {
+            .card-header { flex-direction: column; align-items: stretch; }
+            .card-footer { flex-direction: column; align-items: stretch; text-align: center; }
+            .header-counts .count-chip {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+            .header-counts .count-chip .count-value {
+                font-size: 12px;
+            }
+            .header-counts .count-chip .count-label {
+                font-size: 10px;
+            }
+            .stats-bar .stat-item { font-size: 11px; }
+            .stats-bar .stat-item strong { font-size: 12px; }
+            .job-profile-dropdown { min-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <div class="logo">
+            <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" alt="LOKMAT">
+            <h3>Editorial Employee Directory</h3>
+            <p class="sub">Lokmat Editorial · Data & Users</p>
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>Password (Last 4 digits of Mobile)</label>
+            <input type="password" id="loginPassword" placeholder="Enter last 4 digits" maxlength="4" autocomplete="current-password">
+        </div>
+        <button class="login-btn" id="loginBtn" onclick="handleLogin()">
+            <i class="fa fa-sign-in"></i> Sign In
+        </button>
+        <div class="login-error" id="loginError">Invalid email or password. Please try again.</div>
+    </div>
+</div>
+
+<div class="container-fluid" id="mainContent" style="display:none;">
+
+    <div class="header">
+        <div class="header-row1">
+            <div class="header-left">
+                <img src="https://lh3.googleusercontent.com/d/1uLdST5g0rbVFpAV_i7qJXAI1nZJo20lQ" 
+                     alt="LOKMAT" class="header-logo" 
+                     onerror="this.style.display='none'">
+            </div>
+            
+            <div class="header-counts" id="headerCounts">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <div class="header-user">
+                <div>
+                    <div class="user-name" id="headerUserName">User</div>
+                    <div class="user-role" id="headerUserRole">Role</div>
+                </div>
+                <button class="logout-header-btn" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</button>
+            </div>
+        </div>
+        
+        <div class="header-row2" id="headerRow2">
+            <div class="color-legend">
+                <span class="legend-title">📌 Department Colors:</span>
+                <span class="legend-item">
+                    <span class="legend-color lm"></span> LM-Editorial
+                </span>
+                <span class="legend-item">
+                    <span class="legend-color ls"></span> LS-Editorial
+                </span>
+                <span class="legend-item">
+                    <span class="legend-color lt"></span> LT-Editorial
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-section">
+        <div class="filter-group">
+            <label><i class="fa fa-building"></i> Unit</label>
+            <select id="unitFilter" onchange="onUnitChange()">
+                <option value="">-- Loading --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-map-marker"></i> Workplace</label>
+            <select id="workplaceFilter" onchange="onWorkplaceChange()">
+                <option value="">-- Select Workplace --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-folder"></i> Department</label>
+            <select id="departmentFilter" onchange="applyFilters()">
+                <option value="">-- Select Department --</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-tag"></i> Rank</label>
+            <select id="rankFilter" onchange="applyFilters()">
+                <option value="">All Ranks</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+        </div>
+        
+        <!-- JOB PROFILE CHECKBOX DROPDOWN -->
+        <div class="filter-group">
+            <label><i class="fa fa-briefcase"></i> Job Profiles</label>
+            <div class="job-profile-dropdown" id="jobProfileDropdown">
+                <button class="dropdown-toggle" id="jobProfileToggle" onclick="toggleJobProfileDropdown()">
+                    All Profiles
+                </button>
+                <div class="dropdown-menu" id="jobProfileMenu">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <label><i class="fa fa-calendar"></i> Age</label>
+            <select id="ageFilter" onchange="applyFilters()">
+                <option value="">All Ages</option>
+                <option value="55">> 55</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label><i class="fa fa-building-o"></i> Company</label>
+            <select id="companyFilter" onchange="applyFilters()">
+                <option value="">All Companies</option>
+            </select>
+        </div>
+        
+        <div class="filter-group" style="flex:1; justify-content:flex-end;">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search by name..." oninput="applyFilters()">
+        </div>
+    </div>
+
+    <div class="filter-required-message" id="filterRequiredMessage">
+        <i class="fa fa-exclamation-triangle"></i>
+        <span>Please select <strong>Unit</strong>, <strong>Workplace</strong>, and <strong>Department</strong> to view employees</span>
+    </div>
+
+    <div style="text-align:right; margin-bottom: 8px;">
+        <button class="debug-toggle" onclick="toggleDebug()">
+            <i class="fa fa-bug"></i> Debug Console
+        </button>
+    </div>
+    <div class="debug-console" id="debugConsole"></div>
+
+    <div class="stats-bar" id="statsBar">
+        <span class="stat-item">👥 <strong id="displayCount">0</strong> employees</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">🏢 <strong id="displayUnits">0</strong> units</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">📍 <strong id="displayWorkplaces">0</strong> workplaces</span>
+        <span class="stat-divider">|</span>
+        <span class="stat-item">⭐ <strong id="displayAvgAge">0</strong> avg age</span>
+        <span class="stat-divider" id="pagesDivider">|</span>
+        <span class="pages-stats" id="pagesStats">
+            <!-- Dynamically populated -->
+        </span>
+    </div>
+
+    <div class="employee-grid" id="employeeGrid">
+        <div class="loading-spinner">
+            <i class="fa fa-spinner fa-spin"></i>
+            Loading employee data...
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbypWvpgqaNRf74Azne87Nx1VLrWh_61P-12r7MhIALOb6mYwQ2Prab4jMWUq78G0vcM/exec';
+
+// ============================================================
+// GLOBAL STATE
+// ============================================================
+let allEmployees = [];
+let filteredEmployees = [];
+let allUsers = [];
+let activeUsers = [];
+let loggedInUser = null;
+let pagesData = {};
+let splitData = {};
+let unitData = { units: [], totalEmployees: 0 };
+let departmentData = { departments: [], totalEmployees: 0 };
+let debugLogs = [];
+let debugEnabled = true;
+let debugCounter = 0;
+
+// Job Profile selection state - all selected by default
+let selectedJobProfiles = new Set();
+
+const DEPT_COLORS = {
+    'LM-Editorial': 'lm',
+    'LS-Editorial': 'ls',
+    'LT-Editorial': 'lt'
+};
+
+function getDeptClass(dept) {
+    return DEPT_COLORS[dept] || 'unknown';
+}
+
+// ============================================================
+// DEBUG LOGGING
+// ============================================================
+function debugLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const entry = { timestamp, message, type };
+    debugLogs.push(entry);
+    
+    if (debugEnabled) {
+        const consoleEl = document.getElementById('debugConsole');
+        if (consoleEl) {
+            const colors = {
+                info: '#d4d4d4',
+                success: '#4ec9b0',
+                error: '#f44747',
+                warn: '#dcdcaa'
+            };
+            const color = colors[type] || colors.info;
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            entryDiv.innerHTML = `<span style="color:#888;">[${timestamp}]</span> <span style="color:${color};">${message}</span>`;
+            consoleEl.appendChild(entryDiv);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+    }
+    console.log(`[${timestamp}] ${message}`);
+}
+
+function toggleDebug() {
+    const consoleEl = document.getElementById('debugConsole');
+    if (consoleEl.style.display === 'block') {
+        consoleEl.style.display = 'none';
+        debugEnabled = false;
+    } else {
+        consoleEl.style.display = 'block';
+        debugEnabled = true;
+        consoleEl.innerHTML = '';
+        debugLogs.forEach(entry => {
+            const colors = {
+                info: '#d4d4d4',
+                success: '#4ec9b0',
+                error: '#f44747',
+                warn: '#dcdcaa'
+            };
+            const color = colors[entry.type] || colors.info;
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'debug-entry';
+            entryDiv.innerHTML = `<span style="color:#888;">[${entry.timestamp}]</span> <span style="color:${color};">${entry.message}</span>`;
+            consoleEl.appendChild(entryDiv);
+        });
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+}
+
+// ============================================================
+// LOGIN SYSTEM
+// ============================================================
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    errorEl.classList.remove('show');
+    debugLog('Attempting login for: ' + email, 'info');
+    
+    if (!email || !password) {
+        errorEl.textContent = 'Please enter both email and password.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    if (!/^\d{4}$/.test(password)) {
+        errorEl.textContent = 'Password must be exactly 4 digits.';
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Authenticating...';
+    
+    try {
+        const result = await callAPI('authenticateUser', { email: email, password: password });
+        debugLog('Authentication response: ' + JSON.stringify(result), result.success ? 'success' : 'error');
+        
+        if (result.success && result.user) {
+            if (result.user.role === 'Employee') {
+                errorEl.textContent = 'Access denied. Only Admin and ICD Head can login.';
+                errorEl.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+                return;
+            }
+            
+            loggedInUser = result.user;
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('headerUserName').textContent = result.user.name || result.user.email;
+            
+            if (result.user.role === 'ICD Head') {
+                const unitsDisplay = result.user.units && result.user.units.length > 0 
+                    ? ' - ' + result.user.units.join(', ') 
+                    : '';
+                document.getElementById('headerUserRole').textContent = 'ICD Head' + unitsDisplay;
+            } else {
+                document.getElementById('headerUserRole').textContent = result.user.role;
+            }
+            
+            debugLog('Login successful. User: ' + result.user.name, 'success');
+            await loadAllData();
+        } else {
+            errorEl.textContent = result.message || 'Invalid email or password. Please try again.';
+            errorEl.classList.add('show');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        }
+    } catch(err) {
+        debugLog('Login error: ' + err.message, 'error');
+        errorEl.textContent = 'Error connecting to server. Please try again.';
+        errorEl.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+        console.error('Login error:', err);
+    }
+}
+
+function logout() {
+    if (loggedInUser && loggedInUser.email) {
+        callAPI('logoutUser', { email: loggedInUser.email }).catch(() => {});
+        debugLog('User logged out: ' + loggedInUser.email, 'info');
+    }
+    loggedInUser = null;
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginBtn').innerHTML = '<i class="fa fa-sign-in"></i> Sign In';
+    document.getElementById('debugConsole').innerHTML = '';
+    document.getElementById('debugConsole').style.display = 'none';
+    debugLogs = [];
+    pagesData = {};
+    splitData = {};
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('loginEmail').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+    });
+});
+
+// ============================================================
+// API CALL
+// ============================================================
+function callAPI(action, params) {
+    return new Promise((resolve, reject) => {
+        let url = API_BASE_URL + '?action=' + encodeURIComponent(action);
+        if (params) {
+            url += '&params=' + encodeURIComponent(JSON.stringify(params));
+        }
+        
+        const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            resolve(data);
+        };
+        
+        const script = document.createElement('script');
+        script.src = url + '&callback=' + callbackName;
+        script.onerror = function() {
+            delete window[callbackName];
+            fetch(url)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(err => reject(err));
+        };
+        document.body.appendChild(script);
+        
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                reject(new Error('Request timeout'));
+            }
+        }, 15000);
+    });
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadAllData() {
+    try {
+        debugLog('🔄 Loading employee data...', 'info');
+        
+        const empResult = await callAPI('getEmployees', { 
+            email: loggedInUser.email,
+            role: loggedInUser.role,
+            units: loggedInUser.units || []
+        });
+        
+        if (empResult.success) {
+            allEmployees = empResult.employees || [];
+            filteredEmployees = [...allEmployees];
+            debugLog('✅ Employees loaded: ' + allEmployees.length, 'success');
+        } else {
+            debugLog('❌ Failed to load employees: ' + (empResult.error || 'Unknown error'), 'error');
+            showError('Failed to load employee data: ' + (empResult.error || 'Unknown error'));
+            return;
+        }
+        
+        debugLog('🔄 Loading users data...', 'info');
+        const usersResult = await callAPI('getUsers');
+        if (usersResult.success) {
+            allUsers = usersResult.users || [];
+            activeUsers = allUsers.filter(u => u.Status && u.Status.toLowerCase() === 'active');
+            debugLog('✅ Users loaded: ' + allUsers.length + ' (Active: ' + activeUsers.length + ')', 'success');
+        } else {
+            debugLog('❌ Failed to load users: ' + usersResult.error, 'error');
+        }
+        
+        debugLog('🔄 Loading unit data...', 'info');
+        const unitResult = await callAPI('getUnitsWithCounts', {
+            email: loggedInUser.email,
+            role: loggedInUser.role,
+            units: loggedInUser.units || []
+        });
+        if (unitResult.success) {
+            unitData = {
+                units: unitResult.units || [],
+                totalEmployees: unitResult.totalEmployees || 0
+            };
+            debugLog('✅ Units loaded: ' + unitData.units.length + ', Total: ' + unitData.totalEmployees, 'success');
+        } else {
+            debugLog('❌ Failed to load units: ' + unitResult.error, 'error');
+        }
+        
+        debugLog('🔄 Loading department data...', 'info');
+        const deptResult = await callAPI('getDepartmentsWithCounts', {
+            email: loggedInUser.email,
+            role: loggedInUser.role,
+            units: loggedInUser.units || []
+        });
+        if (deptResult.success) {
+            departmentData = {
+                departments: deptResult.departments || [],
+                totalEmployees: deptResult.totalEmployees || 0
+            };
+            debugLog('✅ Departments loaded: ' + departmentData.departments.length + ', Total: ' + departmentData.totalEmployees, 'success');
+        } else {
+            debugLog('❌ Failed to load departments: ' + deptResult.error, 'error');
+        }
+        
+        debugLog('🔄 Loading pages data...', 'info');
+        const pagesResult = await callAPI('getPagesData', {
+            email: loggedInUser.email
+        });
+        
+        if (pagesResult.success) {
+            pagesData = pagesResult.data || {};
+            debugLog('✅ Pages data loaded: ' + Object.keys(pagesData).length + ' entries', 'success');
+            debugLog('📋 Pages keys: ' + Object.keys(pagesData).join(', '), 'info');
+        } else {
+            debugLog('❌ Failed to load pages data: ' + (pagesResult.error || 'Unknown error'), 'error');
+            pagesData = {};
+        }
+        
+        debugLog('🔄 Loading split data...', 'info');
+        const splitResult = await callAPI('getSplitData', {
+            email: loggedInUser.email
+        });
+        
+        if (splitResult.success) {
+            splitData = splitResult.data || {};
+            debugLog('✅ Split data loaded: ' + Object.keys(splitData).length + ' entries', 'success');
+            debugLog('📋 Split keys: ' + Object.keys(splitData).join(', '), 'info');
+        } else {
+            debugLog('❌ Failed to load split data: ' + (splitResult.error || 'Unknown error'), 'error');
+            splitData = {};
+        }
+        
+        populateUnitFilter();
+        populateWorkplaceFilter();
+        populateDepartmentFilter();
+        populateCompanyFilter();
+        populateJobProfileDropdown();
+        
+        updateHeaderStats();
+        applyFilters();
+        
+        debugLog('✅ All data loaded successfully!', 'success');
+        
+    } catch(error) {
+        debugLog('❌ Error loading data: ' + error.message, 'error');
+        console.error('Error loading data:', error);
+        showError('Error loading data: ' + error.message);
+    }
+}
+
+// ============================================================
+// POPULATE UNIT FILTER
+// ============================================================
+function populateUnitFilter() {
+    const unitSelect = document.getElementById('unitFilter');
+    const currentValue = unitSelect.value;
+    
+    let options = [];
+    
+    if (unitData.totalEmployees > 0) {
+        options.push({
+            value: '__ALL__',
+            label: 'All Units (' + unitData.totalEmployees + ')'
+        });
+    }
+    
+    unitData.units.forEach(unit => {
+        options.push({
+            value: unit.name,
+            label: unit.name + ' (' + unit.count + ')'
+        });
+    });
+    
+    unitSelect.innerHTML = '';
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label;
+        unitSelect.appendChild(option);
+    });
+    
+    if (options.length > 0 && !currentValue) {
+        unitSelect.value = '__ALL__';
+    } else if (currentValue && options.some(o => o.value === currentValue)) {
+        unitSelect.value = currentValue;
+    }
+    
+    debugLog('📋 Units populated: ' + options.length + ' options', 'info');
+}
+
+// ============================================================
+// POPULATE WORKPLACE FILTER
+// ============================================================
+function populateWorkplaceFilter() {
+    const unit = document.getElementById('unitFilter').value;
+    const workplaceSelect = document.getElementById('workplaceFilter');
+    const currentValue = workplaceSelect.value;
+    
+    let employees = allEmployees;
+    
+    if (unit && unit !== '__ALL__') {
+        employees = employees.filter(emp => emp.Unit === unit);
+    }
+    
+    const workplaceCounts = {};
+    employees.forEach(emp => {
+        if (emp.WorkPlace) {
+            workplaceCounts[emp.WorkPlace] = (workplaceCounts[emp.WorkPlace] || 0) + 1;
+        }
+    });
+    
+    const totalEmployees = employees.length;
+    let options = [];
+    
+    if (totalEmployees > 0) {
+        options.push({
+            value: '__ALL__',
+            label: 'All Workplaces (' + totalEmployees + ')'
+        });
+    }
+    
+    Object.keys(workplaceCounts).sort().forEach(wp => {
+        options.push({
+            value: wp,
+            label: wp + ' (' + workplaceCounts[wp] + ')'
+        });
+    });
+    
+    workplaceSelect.innerHTML = '';
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label;
+        workplaceSelect.appendChild(option);
+    });
+    
+    if (options.length > 0 && !currentValue) {
+        workplaceSelect.value = '__ALL__';
+    } else if (currentValue && options.some(o => o.value === currentValue)) {
+        workplaceSelect.value = currentValue;
+    }
+    
+    debugLog('📋 Workplaces populated: ' + options.length + ' options', 'info');
+}
+
+// ============================================================
+// POPULATE DEPARTMENT FILTER
+// ============================================================
+function populateDepartmentFilter() {
+    const unit = document.getElementById('unitFilter').value;
+    const workplace = document.getElementById('workplaceFilter').value;
+    const deptSelect = document.getElementById('departmentFilter');
+    const currentValue = deptSelect.value;
+    
+    let employees = allEmployees;
+    
+    if (unit && unit !== '__ALL__') {
+        employees = employees.filter(emp => emp.Unit === unit);
+    }
+    if (workplace && workplace !== '__ALL__') {
+        employees = employees.filter(emp => emp.WorkPlace === workplace);
+    }
+    
+    const deptCounts = {};
+    employees.forEach(emp => {
+        if (emp.Department) {
+            deptCounts[emp.Department] = (deptCounts[emp.Department] || 0) + 1;
+        }
+    });
+    
+    const totalEmployees = employees.length;
+    let options = [];
+    
+    if (totalEmployees > 0) {
+        options.push({
+            value: '__ALL__',
+            label: 'All Departments (' + totalEmployees + ')'
+        });
+    }
+    
+    Object.keys(deptCounts).sort().forEach(dept => {
+        options.push({
+            value: dept,
+            label: dept + ' (' + deptCounts[dept] + ')'
+        });
+    });
+    
+    deptSelect.innerHTML = '';
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.label;
+        deptSelect.appendChild(option);
+    });
+    
+    if (options.length > 0 && !currentValue) {
+        deptSelect.value = '__ALL__';
+    } else if (currentValue && options.some(o => o.value === currentValue)) {
+        deptSelect.value = currentValue;
+    }
+    
+    debugLog('📋 Departments populated: ' + options.length + ' options', 'info');
+}
+
+// ============================================================
+// POPULATE COMPANY FILTER
+// ============================================================
+function populateCompanyFilter() {
+    const companySelect = document.getElementById('companyFilter');
+    const currentValue = companySelect.value;
+    
+    const companies = [...new Set(allEmployees
+        .map(emp => emp.Company)
+        .filter(c => c && c.trim() !== ''))];
+    
+    companies.sort();
+    
+    companySelect.innerHTML = '<option value="">All Companies</option>';
+    companies.forEach(company => {
+        const option = document.createElement('option');
+        option.value = company;
+        option.textContent = company;
+        companySelect.appendChild(option);
+    });
+    
+    if (currentValue && companies.includes(currentValue)) {
+        companySelect.value = currentValue;
+    }
+    
+    debugLog('📋 Companies populated: ' + companies.length + ' companies', 'info');
+}
+
+// ============================================================
+// POPULATE JOB PROFILE CHECKBOX DROPDOWN
+// ============================================================
+function populateJobProfileDropdown() {
+    const menu = document.getElementById('jobProfileMenu');
+    
+    // Get all unique job profiles
+    const profiles = [...new Set(allEmployees
+        .map(emp => emp.JobProfile)
+        .filter(p => p && p.trim() !== '' && p.trim() !== '-'))];
+    
+    profiles.sort();
+    
+    // Initialize selected state - all checked by default
+    selectedJobProfiles = new Set(profiles);
+    
+    // Build dropdown HTML
+    let html = '';
+    if (profiles.length === 0) {
+        html = '<div class="dropdown-item" style="color:#999; cursor:default;">No profiles available</div>';
+    } else {
+        profiles.forEach(profile => {
+            const count = allEmployees.filter(emp => emp.JobProfile === profile).length;
+            html += `
+                <div class="dropdown-item" onclick="toggleJobProfile('${escapeHtml(profile)}')">
+                    <input type="checkbox" id="jp_${escapeHtml(profile)}" checked onchange="toggleJobProfile('${escapeHtml(profile)}')">
+                    <span class="profile-label">${escapeHtml(profile)}</span>
+                    <span class="profile-count">(${count})</span>
+                </div>
+            `;
+        });
+    }
+    
+    menu.innerHTML = html;
+    
+    // Update dropdown button text
+    updateJobProfileButton();
+    
+    debugLog('📋 Job Profiles populated: ' + profiles.length + ' profiles', 'info');
+}
+
+// ============================================================
+// JOB PROFILE DROPDOWN FUNCTIONS
+// ============================================================
+function toggleJobProfileDropdown() {
+    const menu = document.getElementById('jobProfileMenu');
+    menu.classList.toggle('show');
+}
+
+function toggleJobProfile(profile) {
+    const checkbox = document.getElementById('jp_' + profile);
+    if (checkbox) {
+        if (selectedJobProfiles.has(profile)) {
+            selectedJobProfiles.delete(profile);
+            checkbox.checked = false;
+        } else {
+            selectedJobProfiles.add(profile);
+            checkbox.checked = true;
+        }
+        updateJobProfileButton();
+        applyFilters();
+    }
+}
+
+function updateJobProfileButton() {
+    const button = document.getElementById('jobProfileToggle');
+    const totalProfiles = [...new Set(allEmployees
+        .map(emp => emp.JobProfile)
+        .filter(p => p && p.trim() !== '' && p.trim() !== '-'))].length;
+    
+    const selectedCount = selectedJobProfiles.size;
+    
+    if (selectedCount === totalProfiles && totalProfiles > 0) {
+        button.textContent = 'All Profiles';
+    } else if (selectedCount === 0) {
+        button.textContent = 'None Selected';
+    } else {
+        button.textContent = selectedCount + ' profiles selected';
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('jobProfileDropdown');
+    if (dropdown && !dropdown.contains(event.target)) {
+        const menu = document.getElementById('jobProfileMenu');
+        if (menu) {
+            menu.classList.remove('show');
+        }
+    }
+});
+
+// ============================================================
+// FILTER CHANGE HANDLERS
+// ============================================================
+function onUnitChange() {
+    populateWorkplaceFilter();
+    populateDepartmentFilter();
+    applyFilters();
+}
+
+function onWorkplaceChange() {
+    populateDepartmentFilter();
+    applyFilters();
+}
+
+// ============================================================
+// UPDATE HEADER STATS
+// ============================================================
+function updateHeaderStats() {
+    const countsContainer = document.getElementById('headerCounts');
+    const rankContainer = document.getElementById('headerRow2');
+    
+    if (!loggedInUser) { 
+        countsContainer.innerHTML = ''; 
+        rankContainer.innerHTML = ''; 
+        return; 
+    }
+    
+    let total = allEmployees.length;
+    let activeCount = activeUsers.length;
+    
+    let lmCount = 0, lsCount = 0, ltCount = 0;
+    allEmployees.forEach(emp => {
+        const dept = emp.Department || '';
+        if (dept.includes('LM-')) lmCount++;
+        else if (dept.includes('LS-')) lsCount++;
+        else if (dept.includes('LT-')) ltCount++;
+    });
+    
+    countsContainer.innerHTML = `
+        <span class="count-chip total">
+            <span class="count-label">Total</span>
+            <span class="count-value">${total}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lm">
+            <span class="count-label">LM</span>
+            <span class="count-value">${lmCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip ls">
+            <span class="count-label">LS</span>
+            <span class="count-value">${lsCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip lt">
+            <span class="count-label">LT</span>
+            <span class="count-value">${ltCount}</span>
+        </span>
+        <span class="count-divider">|</span>
+        <span class="count-chip active">
+            <span class="count-label">Active</span>
+            <span class="count-value">${activeCount}</span>
+        </span>
+    `;
+    
+    const rankCounts = { A: 0, B: 0, C: 0, D: 0 };
+    allEmployees.forEach(emp => {
+        const rank = (emp.Rank || '').toUpperCase();
+        if (rankCounts.hasOwnProperty(rank)) {
+            rankCounts[rank]++;
+        }
+    });
+    
+    let rankHtml = '';
+    const rankOrder = ['A', 'B', 'C', 'D'];
+    rankOrder.forEach(rank => {
+        const count = rankCounts[rank] || 0;
+        if (count > 0) {
+            rankHtml += `<span class="rank-item"><span class="rank-name">Rank ${rank}</span><span class="rank-count">${count}</span></span>`;
+        }
+    });
+    
+    if (rankHtml) {
+        rankContainer.innerHTML = `
+            <div class="header-stats">
+                <span class="stat-label">Rank Distribution:</span>
+                ${rankHtml}
+            </div>
+        `;
+    }
+}
+
+// ============================================================
+// APPLY FILTERS (UPDATED with Job Profile checkbox dropdown)
+// ============================================================
+function applyFilters() {
+    const unit = document.getElementById('unitFilter').value;
+    const workplace = document.getElementById('workplaceFilter').value;
+    const department = document.getElementById('departmentFilter').value;
+    const rank = document.getElementById('rankFilter').value;
+    const ageFilter = document.getElementById('ageFilter').value;
+    const company = document.getElementById('companyFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    
+    const filterMsg = document.getElementById('filterRequiredMessage');
+    
+    if (!unit || !workplace || !department) {
+        filterMsg.classList.add('show');
+        document.getElementById('employeeGrid').innerHTML = '';
+        document.getElementById('displayCount').textContent = '0';
+        document.getElementById('displayUnits').textContent = '0';
+        document.getElementById('displayWorkplaces').textContent = '0';
+        document.getElementById('displayAvgAge').textContent = '0';
+        document.getElementById('pagesStats').innerHTML = '';
+        return;
+    }
+    
+    filterMsg.classList.remove('show');
+    
+    // Get selected job profiles from dropdown checkboxes
+    const selectedProfiles = selectedJobProfiles;
+    const hasAnyProfileSelected = selectedProfiles.size > 0;
+    
+    filteredEmployees = allEmployees.filter(emp => {
+        if (!emp.Name) return false;
+        
+        // Standard filters
+        if (unit && unit !== '__ALL__' && emp.Unit !== unit) return false;
+        if (workplace && workplace !== '__ALL__' && emp.WorkPlace !== workplace) return false;
+        if (department && department !== '__ALL__' && emp.Department !== department) return false;
+        if (rank && emp.Rank !== rank) return false;
+        if (company && emp.Company !== company) return false;
+        
+        // Age filter
+        if (ageFilter === '55') {
+            const age = parseInt(emp.Age);
+            if (isNaN(age) || age <= 55) return false;
+        }
+        
+        // Search filter
+        if (searchTerm && !emp.Name.toLowerCase().includes(searchTerm)) return false;
+        
+        // Job Profile filter - if no profiles selected, show none
+        if (!hasAnyProfileSelected) return false;
+        
+        // If employee has no Job Profile, skip (unless "empty" is in selected)
+        const empProfile = emp.JobProfile || '';
+        if (!empProfile) {
+            // Only include if we have an empty/blank option (we don't)
+            return false;
+        }
+        
+        // Check if employee's profile is in selected set
+        return selectedProfiles.has(empProfile);
+    });
+    
+    debugLog('🔍 Filters applied: ' + filteredEmployees.length + ' employees found', 'info');
+    debugLog('📋 Selected profiles: ' + selectedProfiles.size + ' profiles', 'info');
+    renderEmployees(filteredEmployees);
+    updateDisplayStats(unit, workplace, department);
+}
+
+// ============================================================
+// UPDATE DISPLAY STATS - With Inline Editions List
+// ============================================================
+function updateDisplayStats(unit, workplace, department) {
+    const units = new Set();
+    const workplaces = new Set();
+    let totalAge = 0;
+    let ageCount = 0;
+    
+    const actualUnit = (unit && unit !== '__ALL__') ? unit : null;
+    const actualDepartment = (department && department !== '__ALL__') ? department : null;
+    
+    filteredEmployees.forEach(emp => {
+        if (emp.Unit) units.add(emp.Unit);
+        if (emp.WorkPlace) workplaces.add(emp.WorkPlace);
+        if (emp.Age) {
+            totalAge += parseInt(emp.Age) || 0;
+            ageCount++;
+        }
+    });
+    
+    document.getElementById('displayCount').textContent = filteredEmployees.length;
+    document.getElementById('displayUnits').textContent = units.size;
+    document.getElementById('displayWorkplaces').textContent = workplaces.size;
+    document.getElementById('displayAvgAge').textContent = ageCount > 0 ? Math.round(totalAge / ageCount) : 0;
+    
+    let freshPagination = '—';
+    let alterPagination = '—';
+    let requiredStrength = '—';
+    let workCentreLabel = '';
+    let editionHtml = '';
+    let allEditions = [];
+    
+    const pagesStatsContainer = document.getElementById('pagesStats');
+    
+    debugLog('📊 updateDisplayStats: Unit=' + actualUnit + ', Department=' + actualDepartment, 'info');
+    debugLog('📊 splitData keys: ' + Object.keys(splitData).join(', '), 'info');
+    debugLog('📊 pagesData keys: ' + Object.keys(pagesData).join(', '), 'info');
+    
+    if (actualDepartment && actualUnit) {
+        const pagesKey = actualDepartment + '|' + actualUnit;
+        const pageData = pagesData[pagesKey] || {};
+        
+        if (pageData && Object.keys(pageData).length > 0) {
+            freshPagination = pageData.freshPagination > 0 ? pageData.freshPagination : '—';
+            alterPagination = pageData.alterPagination > 0 ? pageData.alterPagination : '—';
+            requiredStrength = pageData.requiredStrength > 0 ? pageData.requiredStrength : '—';
+            debugLog('✅ Pages data found: ' + pagesKey + ' → Fresh=' + freshPagination + ', Alter=' + alterPagination + ', Required=' + requiredStrength, 'success');
+        } else {
+            debugLog('❌ No pages data found for: ' + pagesKey, 'error');
+        }
+        
+        for (const key in splitData) {
+            const parts = key.split('|');
+            const keyDept = parts[0];
+            const keyUnit = parts[1];
+            
+            if (keyDept !== actualDepartment) continue;
+            
+            if (keyUnit.startsWith(actualUnit)) {
+                const data = splitData[key];
+                if (data && data.editions) {
+                    data.editions.forEach(e => {
+                        allEditions.push({
+                            edition: e.edition || 'Main',
+                            freshPagination: e.freshPagination || 0,
+                            alterPagination: e.alterPagination || 0,
+                            splitUnit: keyUnit
+                        });
+                    });
+                    debugLog('✅ Found split data: ' + key + ' (' + data.editions.length + ' editions)', 'success');
+                }
+            }
+        }
+        
+        debugLog('🔍 Total Editions Found: ' + allEditions.length, 'info');
+        workCentreLabel = 'Work Centre - ' + actualUnit;
+        
+        if (allEditions.length > 0) {
+            allEditions.sort((a, b) => (a.edition || '').localeCompare(b.edition || ''));
+            
+            let editionsList = '';
+            allEditions.forEach((e, index) => {
+                const freshDisplay = (e.freshPagination !== undefined && e.freshPagination !== null && e.freshPagination > 0) ? e.freshPagination : '—';
+                const alterDisplay = (e.alterPagination !== undefined && e.alterPagination !== null && e.alterPagination > 0) ? e.alterPagination : '—';
+                const editionName = e.edition || 'Main';
+                const comma = (index < allEditions.length - 1) ? ', ' : '';
+                editionsList += `<span class="edition-name">${escapeHtml(editionName)}</span>(<span class="efresh">${freshDisplay}</span>,<span class="ealter">${alterDisplay}</span>)${comma}`;
+            });
+            
+            editionHtml = `
+                <span class="ps-divider">|</span>
+                <span class="ps-item editions-inline" title="Click to expand all editions">
+                    <span class="ps-label">📋</span>
+                    <span class="ps-value editions-list">${editionsList}</span>
+                </span>
+            `;
+            
+            debugLog('✅ Built inline editions list with ' + allEditions.length + ' editions', 'success');
+        } else {
+            debugLog('ℹ️ No editions found for unit: ' + actualUnit, 'info');
+        }
+    } else {
+        if (!actualDepartment) debugLog('ℹ️ Department not selected (using All Departments)', 'info');
+        if (!actualUnit) debugLog('ℹ️ Unit not selected (using All Units)', 'info');
+        debugLog('ℹ️ Pages data requires specific Department AND Unit selection', 'info');
+    }
+    
+    let pagesHtml = '';
+    
+    if (workCentreLabel) {
+        pagesHtml += `
+            <span class="ps-item work-centre">
+                <span class="ps-label">🏢</span>
+                <span class="ps-value work-centre-name">${escapeHtml(workCentreLabel)}</span>
+            </span>
+            <span class="ps-divider">|</span>
+        `;
+    }
+    
+    pagesHtml += `
+        <span class="ps-item">
+            <span class="ps-label">📄 Fresh:</span>
+            <span class="ps-value fresh">${freshPagination}</span>
+        </span>
+        <span class="ps-item">
+            <span class="ps-label">🔄 Alter:</span>
+            <span class="ps-value alter">${alterPagination}</span>
+        </span>
+        <span class="ps-item">
+            <span class="ps-label">💪 Required:</span>
+            <span class="ps-value required">${requiredStrength}</span>
+        </span>
+    `;
+    
+    if (editionHtml) {
+        pagesHtml += editionHtml;
+    }
+    
+    pagesStatsContainer.innerHTML = pagesHtml;
+}
+
+// ============================================================
+// RENDER EMPLOYEES
+// ============================================================
+function renderEmployees(employees) {
+    const grid = document.getElementById('employeeGrid');
+    
+    if (employees.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results">
+                <i class="fa fa-search"></i>
+                No employees found matching the current filters
+                <br><small style="color:#aaa;">Try adjusting your filters or search terms</small>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    employees.forEach(emp => {
+        html += buildEmployeeCard(emp);
+    });
+    grid.innerHTML = html;
+}
+
+// ============================================================
+// BUILD EMPLOYEE CARD (UPDATED with DoFC and Company)
+// ============================================================
+function buildEmployeeCard(emp) {
+    let roleClass = 'unknown';
+    let roleText = emp.Role || 'Employee';
+    if (roleText === 'Admin') { roleClass = 'admin'; }
+    else if (roleText === 'ICD Head') { roleClass = 'icd-head'; }
+    else if (roleText === 'Employee') { roleClass = 'employee'; }
+    
+    let rankClass = '';
+    let rankText = emp.Rank || '';
+    if (rankText === 'A') rankClass = 'A';
+    else if (rankText === 'B') rankClass = 'B';
+    else if (rankText === 'C') rankClass = 'C';
+    else if (rankText === 'D') rankClass = 'D';
+    
+    const deptClass = getDeptClass(emp.Department);
+    let deptBadgeClass = 'unknown';
+    let deptDisplay = emp.Department || '—';
+    if (deptDisplay.includes('LM')) deptBadgeClass = 'LM';
+    else if (deptDisplay.includes('LS')) deptBadgeClass = 'LS';
+    else if (deptDisplay.includes('LT')) deptBadgeClass = 'LT';
+    
+    const isActive = activeUsers.some(u => u.Email && u.Email.toLowerCase() === (emp.Email || '').toLowerCase());
+    const activeStatusHtml = isActive ? 
+        '<span class="active-status active"><i class="fa fa-circle"></i> Active</span>' : 
+        '<span class="active-status inactive"><i class="fa fa-circle-o"></i> Inactive</span>';
+    
+    if (debugCounter < 5) {
+        debugLog(
+            '🔍 Emp #' + (debugCounter + 1) + ': ' + emp.Name + 
+            ' | Dept: ' + (emp.Department || '—') +
+            ' | Unit: ' + (emp.Unit || '—'),
+            'info'
+        );
+        debugCounter++;
+    }
+    
+    let detailHtml = `
+        <div class="detail-row-inline">
+            <span class="label">Department</span>
+            <span class="value">${escapeHtml(emp.Department || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Unit</span>
+            <span class="value">${escapeHtml(emp.Unit || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Designation</span>
+            <span class="value">${escapeHtml(emp.Designation || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Company</span>
+            <span class="value">${escapeHtml(emp.Company || '—')}</span>
+        </div>
+        <div class="detail-row-inline">
+            <span class="label">Emp Code</span>
+            <span class="value">${escapeHtml(emp.EmpCode || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">DOB</span>
+            <span class="value">${escapeHtml(emp.DOB || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">DoFC</span>
+            <span class="value">${escapeHtml(emp.DoFC || '—')}</span>
+            <span class="divider">|</span>
+            <span class="label">Age</span>
+            <span class="value">${escapeHtml(emp.Age || '—')} years</span>
+        </div>
+    `;
+    
+    let jobProfileHtml = '';
+    if (emp.JobProfile && emp.JobProfile.trim() !== '' && emp.JobProfile.trim() !== '-') {
+        jobProfileHtml = `
+            <div class="job-profile-section">
+                <div class="jp-label"><i class="fa fa-briefcase"></i> Job Profile</div>
+                <span class="jp-value">${escapeHtml(emp.JobProfile)}</span>
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="employee-card dept-${deptClass}">
+            <div class="card-header">
+                <span class="name">${escapeHtml(emp.Name)}</span>
+                <div class="badge-group">
+                    ${rankText ? `<span class="rank-badge ${rankClass}">Rank ${escapeHtml(rankText)}</span>` : ''}
+                    ${deptDisplay !== '—' ? `<span class="dept-badge ${deptBadgeClass}">${escapeHtml(deptDisplay)}</span>` : ''}
+                    <span class="role-badge ${roleClass}">${roleText}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                ${detailHtml}
+                ${jobProfileHtml}
+            </div>
+            <div class="card-footer">
+                <span class="workplace-tag">📍 ${escapeHtml(emp.WorkPlace || '—')}</span>
+                ${activeStatusHtml}
+            </div>
+        </div>
+    `;
+}
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function showError(message) {
+    const grid = document.getElementById('employeeGrid');
+    grid.innerHTML = `
+        <div class="no-results" style="border-left: 4px solid #dc3545;">
+            <i class="fa fa-exclamation-triangle" style="color:#dc3545;"></i>
+            ${escapeHtml(message)}
+            <br><small style="color:#aaa;">Please check your API URL and try again</small>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
