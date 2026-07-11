@@ -1671,7 +1671,6 @@ function updateHeaderStats() {
     }
     
     let total = allEmployees.length;
-    let activeCount = activeUsers.length;
     
     let lmCount = 0, lsCount = 0, ltCount = 0;
     allEmployees.forEach(emp => {
@@ -1701,11 +1700,6 @@ function updateHeaderStats() {
             <span class="count-label">LT</span>
             <span class="count-value">${ltCount}</span>
         </span>
-        <span class="count-divider">|</span>
-        <span class="count-chip active">
-            <span class="count-label">Active</span>
-            <span class="count-value">${activeCount}</span>
-        </span>
     `;
     
     const rankCounts = { A: 0, B: 0, C: 0, D: 0 };
@@ -1734,7 +1728,6 @@ function updateHeaderStats() {
         `;
     }
 }
-
 // ============================================================
 // APPLY FILTERS
 // ============================================================
